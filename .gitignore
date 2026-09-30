@@ -1,0 +1,6 @@
+# macOS 系统缓存
+.DS_Store
+
+# Python 缓存文件
+__pycache__/
+*.py[cod]
