@@ -9,7 +9,7 @@ def s(v):
 
 def main(path, out):
     wb = openpyxl.load_workbook(path, data_only=True, keep_vba=True)
-    data = {"persons": [], "marriages": [], "children": [], "families": []}
+    data = {"persons": [], "marriages": [], "children": [], "families": [], "collaterals": []}
 
     ws = wb['人物表']
     for r in ws.iter_rows(min_row=2, values_only=True):
@@ -39,6 +39,23 @@ def main(path, out):
         if not name: continue
         data["families"].append({"name": name, "hex": s(r[ci_hex]), "text": s(r[ci_txt]) or '#000000'})
 
+    # 旁系关系表：A 关系ID；B/D/F/H 人物ID，C/E/G/I 姓名（人物1–4）；J 关系统称；L 出处；M 备注（K 列暂不读取）
+    if '旁系关系表' in wb.sheetnames:
+        ids = {p["id"]: p["name"] for p in data["persons"]}
+        for r in wb['旁系关系表'].iter_rows(min_row=2, values_only=True):
+            if not s(r[0]): continue
+            members, gap = [], False
+            for i in (1, 3, 5, 7):
+                pid, nm = s(r[i]), s(r[i + 1])
+                if not pid:
+                    gap = True
+                    continue
+                if gap: print('提示：%s 的人物没有从左到右填满' % s(r[0]))
+                if pid not in ids: print('提示：%s 的人物ID %s 不在人物表里' % (s(r[0]), pid))
+                elif nm and ids[pid] != nm: print('提示：%s 的 %s 与人物表姓名（%s）不一致' % (s(r[0]), pid, ids[pid]))
+                members.append({"id": pid, "name": nm})
+            data["collaterals"].append({"id": s(r[0]), "members": members, "term": s(r[9]),
+                                        "source": s(r[11]) if len(r) > 11 else '', "note": s(r[12]) if len(r) > 12 else ''})
     json.dump(data, open(out, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     print({k: len(v) for k, v in data.items()})
 

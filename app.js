@@ -30,7 +30,55 @@
   const stripName = name => (name ? name.replace(/[(（].*?[)）]/g, '') : '');
 
   /* ---------------------------------------------------------------- 渲染 */
-  function render() {
+  /* ------------------------------------------------ 展开/折叠的平滑过渡
+     卡片和小圆点：原来就有的平滑移到新位置，新出现的淡入；线和图标：没变的保持不动，新的淡入，消失的淡出 */
+  const DUR = 420, EASE = 'cubic-bezier(.33,.7,.25,1)';
+  const REDUCE = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  function collectDom() {
+    const cards = new Map(), chips = new Map(), sigs = [];
+    const put = (map, key, rec) => { let i = 0; while (map.has(key + '#' + i)) i++; map.set(key + '#' + i, rec); };
+    vp.querySelectorAll('[data-key]').forEach(n => put(cards, n.getAttribute('data-key'), { n, x: +n.getAttribute('data-x'), y: +n.getAttribute('data-y') }));
+    vp.querySelectorAll('[data-chip]').forEach(n => put(chips, n.getAttribute('data-chip'), { n, x: +n.getAttribute('data-x'), y: +n.getAttribute('data-y') }));
+    vp.querySelectorAll('[data-sig]').forEach(n => sigs.push([n.getAttribute('data-sig'), n]));
+    return { cards, chips, sigs };
+  }
+  function fadeIn(n, delay) {
+    const o = getComputedStyle(n).opacity;
+    n.style.opacity = '0'; n.getBoundingClientRect();
+    n.style.transition = `opacity ${DUR}ms ease ${delay || 0}ms`; n.style.opacity = o;
+    setTimeout(() => { n.style.opacity = ''; n.style.transition = ''; }, DUR + (delay || 0) + 60);
+  }
+  function glide(n, from, to) {
+    n.style.transition = 'none'; n.style.transform = `translate(${from.x}px,${from.y}px)`; n.getBoundingClientRect();
+    n.style.transition = `transform ${DUR}ms ${EASE}`; n.style.transform = `translate(${to.x}px,${to.y}px)`;
+    setTimeout(() => { n.style.transition = ''; n.style.transform = ''; }, DUR + 60);
+  }
+  function playTransition(old) {
+    const now = collectDom();
+    const ghosts = el('g', { 'pointer-events': 'none' });
+    vp.insertBefore(ghosts, vp.firstChild);
+    const fadeOut = n => {
+      ghosts.appendChild(n);
+      const o = getComputedStyle(n).opacity;
+      n.style.opacity = o; n.getBoundingClientRect();
+      n.style.transition = `opacity ${Math.round(DUR * 0.7)}ms ease`; n.style.opacity = '0';
+      setTimeout(() => n.remove(), DUR);
+    };
+    [[now.cards, old.cards], [now.chips, old.chips]].forEach(([cur, prev]) => {
+      cur.forEach((c, k) => {
+        const p = prev.get(k);
+        if (!p) fadeIn(c.n, 60);
+        else if (p.x !== c.x || p.y !== c.y) glide(c.n, p, c);
+      });
+      prev.forEach((p, k) => { if (!cur.has(k)) fadeOut(p.n); });
+    });
+    const oldSigs = new Set(old.sigs.map(s => s[0])), newSigs = new Set(now.sigs.map(s => s[0]));
+    now.sigs.forEach(([sig, n]) => { if (!oldSigs.has(sig)) fadeIn(n, 120); });
+    old.sigs.forEach(([sig, n]) => { if (!newSigs.has(sig)) fadeOut(n); });
+  }
+
+  function render(animate) {
+    const old = (animate && !REDUCE && vp.firstChild) ? collectDom() : null;
     view = Core.buildView(model, focus, state);
     vp.textContent = '';
     const gLines = el('g', {}, vp), gCards = el('g', {}, vp), gTop = el('g', {}, vp);
@@ -39,26 +87,35 @@
       if (l.double) {
         [-2.6, 2.6].forEach(o => el('line', {
           x1: l.x1 + o, y1: l.y1, x2: l.x2 + o, y2: l.y2,
-          class: 'ln child' + (l.gray ? ' gray' : '')
+          class: 'ln child' + (l.gray ? ' gray' : ''),
+          'data-sig': `L${Math.round(l.x1 + o)},${Math.round(l.y1)},${Math.round(l.x2 + o)},${Math.round(l.y2)}${l.gray ? 'g' : ''}`
         }, gLines));
       } else {
         el('line', {
           x1: l.x1, y1: l.y1, x2: l.x2, y2: l.y2,
-          class: 'ln ' + (l.kind === 'child' ? 'child' : l.style) + (l.gray ? ' gray' : '')
+          class: 'ln ' + (l.kind === 'child' ? 'child' : l.style) + (l.gray ? ' gray' : ''),
+          'data-sig': `L${Math.round(l.x1)},${Math.round(l.y1)},${Math.round(l.x2)},${Math.round(l.y2)}${l.kind === 'child' ? 'c' : l.style}${l.gray ? 'g' : ''}`
         }, gLines);
       }
     });
     view.pairLines.forEach(l => {
-      const g = el('g', { class: 'pair' + (l.gray ? ' gray' : ''), 'data-act': l.action }, gLines);
+      const g = el('g', { class: 'pair' + (l.gray ? ' gray' : ''), 'data-act': l.action,
+        'data-sig': `P${Math.round(l.x1)},${Math.round(l.y1)},${Math.round(l.x2)},${Math.round(l.y2)}${l.style}${l.action}` }, gLines);
       el('line', { x1: l.x1, y1: l.y1, x2: l.x2, y2: l.y2, class: 'ln ' + l.style }, g);
       el('line', { x1: l.x1, y1: l.y1, x2: l.x2, y2: l.y2, class: 'hit' }, g);
       el('title', {}, g).textContent = '点击婚姻线：收回这位联姻对象';
     });
 
+    (view.kinLines || []).forEach(k => {          // 旁系连接线：⊓ 折线（亲兄弟实线；堂/表/再从虚线），线上标关系词
+      const d = k.legs.map((x, i) => `M${x},${k.legY ? k.legY[i] : k.yCard}L${x},${k.top}`).join('') + `M${k.x1},${k.top}L${k.x2},${k.top}`;
+      el('path', { d, class: 'kin' + (k.dash ? ' dash' : '') + (k.dot ? ' dot' : ''), 'data-sig': 'K' + d }, gLines);
+      el('text', { x: (k.x1 + k.x2) / 2, y: k.top - 6, class: 'kinlbl', 'data-sig': `T${Math.round(k.x1)},${Math.round(k.top)}${k.label}` }, gLines).textContent = k.label;
+    });
+
     view.cards.forEach(c => {
       const g = el('g', {
         class: 'card' + (c.gray ? ' gray' : '') + (c.clickable ? ' clickable' : ''),
-        transform: `translate(${c.x},${c.y})`
+        transform: `translate(${c.x},${c.y})`, 'data-key': c.key, 'data-x': c.x, 'data-y': c.y, 'data-uid': c.uid
       }, gCards);
       if (c.clickable) g.setAttribute('data-act', 'focus:' + c.key);
       const r = el('rect', {
@@ -76,15 +133,29 @@
       el('title', {}, g).textContent = stripName(c.name) + (c.zi ? '（' + c.zi + '）' : '') + (c.family && c.family !== '-' ? ' · ' + c.family : '');
     });
 
+    (view.adoptLinks || []).forEach(a => {       // 过继的虚线 Π：平时隐藏，鼠标放在生父母名下那张卡上时显示
+      const g = el('g', { class: 'adoptpi', 'data-bio': a.bioUid }, gLines);
+      el('path', { d: `M${a.x1},${a.y1}L${a.x1},${a.top}L${a.x2},${a.top}L${a.x2},${a.y2}`, class: 'kin dash' }, g);
+      el('text', { x: (a.x1 + a.x2) / 2, y: a.top - 6, class: 'kinlbl' }, g).textContent = a.label;
+      const bioG = gCards.querySelector(`[data-uid="${a.bioUid}"]`), adoptRect = gCards.querySelector(`[data-uid="${a.adoptUid}"] rect`);
+      if (bioG && adoptRect) {
+        bioG.addEventListener('mouseenter', () => { g.classList.add('on'); adoptRect.classList.add('sel'); });
+        bioG.addEventListener('mouseleave', () => { g.classList.remove('on'); if (!adoptRect.dataset.sel) adoptRect.classList.remove('sel'); });
+        if (adoptRect.classList.contains('sel')) adoptRect.dataset.sel = '1';
+      }
+    });
+
     view.chips.forEach(c => {
-      const g = el('g', { class: 'chip' + (c.gray ? ' gray' : ''), transform: `translate(${c.x},${c.y})`, 'data-act': c.action, style: 'cursor:pointer;user-select:none;-webkit-user-select:none;' }, gTop);
+      const g = el('g', { class: 'chip' + (c.gray ? ' gray' : ''), transform: `translate(${c.x},${c.y})`, 'data-act': c.action, 'data-chip': c.action, 'data-x': c.x, 'data-y': c.y, style: 'cursor:pointer;user-select:none;-webkit-user-select:none;' }, gTop);
       el('circle', { r: 24, style: 'fill:transparent;stroke:transparent;' }, g);
-      el('circle', { r: 12 }, g);
+      if (c.shape === 'diamond') el('polygon', { points: '0,-13 13,0 0,13 -13,0', class: 'dia' }, g);   // 旁系亲属：小菱形
+      else el('circle', { r: 12 }, g);
       el('text', { x: 0, y: 1 }, g).textContent = c.label;
+      if (c.title) el('title', {}, g).textContent = c.title;
     });
 
     view.icons.forEach(i => {
-      const g = el('g', { class: 'icon' + (i.gray ? ' gray' : ''), 'data-act': i.action }, gTop);
+      const g = el('g', { class: 'icon' + (i.gray ? ' gray' : ''), 'data-act': i.action, 'data-sig': `I${i.action}@${Math.round(i.x)},${Math.round(i.y)}` }, gTop);
       const s = i.size;
       if (i.shape === 'circle') el('circle', { cx: i.x + s / 2, cy: i.y + s / 2, r: s / 2, fill: i.fill }, g);
       else el('rect', { x: i.x, y: i.y, width: s, height: s, fill: i.fill }, g);
@@ -92,6 +163,7 @@
     });
 
     renderInfo();
+    if (old) playTransition(old);
   }
 
   function renderInfo() {
@@ -104,7 +176,10 @@
     infoEl.textContent = '';
     const b = document.createElement('b'); b.textContent = bits[0]; infoEl.appendChild(b);
     if (bits.length > 1) infoEl.appendChild(document.createTextNode('　' + bits.slice(1).join(' · ')));
-    if (view.up) {
+    if (view.virtual) {
+      const d = document.createElement('div'); d.className = 'note'; d.textContent = '兄弟姐妹（来自旁系关系表，左长右幼；父母未录入；同父异母灰显）　本人的配偶与子女在下面一行';
+      infoEl.appendChild(d);
+    } else if (view.up) {
       const nameOf = k => k.startsWith('u:')
         ? (k.includes('庶母') ? '未知妾室' : '未知')
         : (model.persons.get(k) ? stripName(model.persons.get(k).name) : '未知');
@@ -178,10 +253,11 @@
   }
   // R2.2：展开/收起后画面不自动居中、不缩放；只把被点的那个"+N"钉在屏幕原位，避免内容因腾出空间而滑走
   function keepChip(action, change) {
-    const before = view.chips.find(c => c.action === action);
+    const pick = () => view.chips.find(c => c.action === action && !c.out) || view.chips.find(c => c.action === action && !c.gray) || view.chips.find(c => c.action === action);
+    const before = pick();
     change();
-    render();
-    const after = before && view.chips.find(c => c.action === action);
+    render(true);
+    const after = before && pick();
     if (after) { T.x += (before.x - after.x) * T.k; T.y += (before.y - after.y) * T.k; applyT(); }
   }
   function act(a) {
@@ -191,6 +267,9 @@
     else if (type === 'up') {                     // R2.2：父/母卡片上方的"+N"——往上展开一代（祖辈+兄弟姐妹）
       keepChip(a, () => { if (state.upOpen.has(arg)) state.upOpen.delete(arg); else state.upOpen.add(arg); });
     }
+    else if (type === 'rel') {                    // 小菱形：展开/收起旁系表里直接写的亲属
+      keepChip(a, () => { if (state.relOpen.has(arg)) state.relOpen.delete(arg); else state.relOpen.add(arg); });
+    }
     else if (type === 'kids') {                   // R2.2：点"+N"展开/收起这一组子女
       keepChip(a, () => { if (state.kidOpen.has(arg)) state.kidOpen.delete(arg); else state.kidOpen.add(arg); });
     }
@@ -198,13 +277,13 @@
       const [k, sp] = arg.split('|');
       state.expSp.add(arg);
       if (state.kidOpen.has(k + '|*')) state.kidOpen.add(k + '|' + sp);   // 子女已经摊开的，展开配偶后继续摊开
-      render();
+      render(true);
     }
     else if (type === 'collapse') {
       const [k, sp] = arg.split('|');
-      state.expSp.delete(arg);
+      state.expSp.delete(arg); state.expSp.delete(sp + '|' + k);            // 两个方向都收回
       if (state.kidOpen.delete(k + '|' + sp)) state.kidOpen.add(k + '|*'); // 子女已经摊开的，收回配偶后继续摊开
-      render();
+      render(true);
     }
   }
 
@@ -254,6 +333,7 @@
       state.expSp.clear();
       state.kidOpen.clear();
       state.upOpen.clear();
+      state.relOpen.clear();
       render();
       fit();
       setTimeout(() => { collapseAllEl.checked = false; }, 300);

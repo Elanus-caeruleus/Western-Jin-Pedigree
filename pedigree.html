@@ -38,12 +38,20 @@
   .l-c{width:12px;height:12px;border-radius:50%;background:#C9A4E4;border:1px solid #666}
   .l-s{width:12px;height:12px;background:#C4D79B;border:1px solid #666}
   .l-gray{width:22px;height:12px;background:#c00;opacity:.4;filter:grayscale(.85);border:1px solid #666}
+  .l-dia{width:10px;height:10px;transform:rotate(45deg);border:1.3px solid #9a7b3f;background:#fff7e6;margin-right:7px!important}
+  .l-kin{width:26px;border-top:1.5px dashed #9a7b3f}
   .l-chip{width:16px;height:16px;border-radius:50%;border:1.3px solid var(--line);background:#fff;font-style:normal;font-size:9px;line-height:14px;text-align:center;color:#222}
   /* 画布内元素 */
   .ln{stroke:var(--line);fill:none;stroke-linecap:butt}
   .ln.thick{stroke-width:4.2}
   .ln.thin{stroke-width:1.6}
   .ln.child{stroke:#9a9a9a;stroke-width:1.6}
+  .kin{stroke:#9a7b3f;stroke-width:1.5;fill:none}
+  .kin.dash{stroke-dasharray:6 4}
+  .kin.dot{stroke-dasharray:2 4}
+  .adoptpi{opacity:0;pointer-events:none;transition:opacity .18s ease}
+  .adoptpi.on{opacity:1}
+  .kinlbl{font-size:11.5px;fill:#7a5f2a;text-anchor:middle;paint-order:stroke;stroke:var(--bg);stroke-width:3px;pointer-events:none}
   .pair .hit{stroke:transparent;stroke-width:16;cursor:pointer}
   .pair:hover .ln{stroke:#c0392b}
   .box{stroke:#444;stroke-width:1.2}
@@ -58,6 +66,8 @@
   .chip{cursor:pointer}
   .chip circle{fill:#fff;stroke:var(--line);stroke-width:1.4}
   .chip:hover circle{fill:#eee}
+  .chip polygon.dia{fill:#fff7e6;stroke:#9a7b3f;stroke-width:1.4}
+  .chip:hover polygon.dia{fill:#f3e3bf}
   .chip text{font-size:12px;fill:#222;text-anchor:middle;dominant-baseline:central;pointer-events:none}
   .icon{cursor:pointer}
   .icon circle,.icon rect{stroke:#555;stroke-width:1.3}
@@ -97,6 +107,8 @@
     <span><i class="l-chip">+N</i>点开/收起子女；父/母卡片上方的＋N＝往上展开一代（祖辈与伯叔姑舅姨，灰显）</span>
     <span><i class="l-c"></i>圆＝女联姻对象　<i class="l-s"></i>方＝男联姻对象（点击展开，点婚姻线收回）</span>
     <span><i class="l-gray"></i>灰显＝同父异母兄弟姐妹 / 父亲的其他配偶</span>
+    <span><i class="l-dia"></i>卡片右上角的小菱形＝旁系表里直接写的亲属（堂 / 从 / 表等），点开显示灰显卡片</span>
+    <span><i class="l-kin"></i>旁系连线：亲兄弟姐妹实线，堂 / 表 / 再从虚线；一脚短一脚长的虚线＝差一辈的旁系（如从子，短脚接长辈）</span>
     <span>拖拽平移 · 滚轮缩放 · 点卡片换人</span>
   </div>
   <div class="modal-overlay" id="collapse-modal">
@@ -113,7 +125,7 @@
     </div>
   </div>
 </div>
-<script>window.PEDIGREE_DATA = {"persons":[{"id":"P001","name":"司马昭","zi":"字子上，谥文帝","gender":"男","family":"河内司马氏","birth":"211","death":"265","note":"权臣，晋朝奠基者，司马炎、司马攸之父"},{"id":"P002","name":"王元姬","zi":"谥文明皇后","gender":"女","family":"东海王氏","birth":"217","death":"268","note":"司马昭正妻，经学家王肃之女；"},{"id":"P003","name":"司马师","zi":"字子元，谥景帝","gender":"男","family":"河内司马氏","birth":"208","death":"255","note":"司马昭之兄，无子，以弟司马昭次子攸为嗣；原配夏侯徽本表未收录"},{"id":"P004","name":"羊徽瑜","zi":"谥景献皇后","gender":"女","family":"泰山羊氏","birth":"214","death":"278","note":"司马师续娶之妻，羊祜之姊"},{"id":"P005","name":"羊衜","zi":"","gender":"男","family":"泰山羊氏","birth":"","death":"","note":"羊续子，上党太守，羊祜、羊徽瑜之父。《晋书》卷34《羊祜传》"},{"id":"P006","name":"羊耽","zi":"","gender":"男","family":"泰山羊氏","birth":"","death":"","note":"羊衜弟，太常，辛宪英夫。《晋书》卷34《羊祜传》"},{"id":"P007","name":"羊祜","zi":"字叔子","gender":"男","family":"泰山羊氏","birth":"221","death":"278","note":"《晋书》卷34《羊祜传》：泰始八年卒，时年五十八"},{"id":"P008","name":"夏侯氏（夏侯霸女，羊祜妻）","zi":"夏侯霸女，羊祜妻","gender":"女","family":"-","birth":"","death":"","note":"夏侯霸之女。见《三国志·夏侯渊传》注"},{"id":"P009","name":"羊瑾","zi":"","gender":"男","family":"泰山羊氏","birth":"","death":"","note":"羊耽长子，尚书右仆射。《晋书》卷93《外戚传》"},{"id":"P010","name":"羊琇","zi":"字稚舒","gender":"男","family":"泰山羊氏","birth":"236","death":"282","note":"《晋书》卷93《外戚传》"},{"id":"P011","name":"羊玄之","zi":"字宏献","gender":"男","family":"泰山羊氏","birth":"","death":"303","note":"羊瑾子，羊献容父。《晋书》卷93《外戚传》"},{"id":"P012","name":"羊献容","zi":"谥献文皇后","gender":"女","family":"泰山羊氏","birth":"","death":"322","note":"晋惠帝第二任皇后，后为刘曜皇后。《晋书》卷31《后妃传》"},{"id":"P013","name":"司马亮","zi":"字子翼，汝南王，谥文成","gender":"男","family":"河内司马氏","birth":"","death":"291","note":"宣帝第四子，伏夫人所生。《晋书》卷59《汝南王亮传》"},{"id":"P014","name":"司马氏（司马亮女，裴舆妻）","zi":"司马亮女，裴舆妻","gender":"女","family":"河内司马氏","birth":"","death":"","note":"司马亮之女"},{"id":"P015","name":"司马氏（司马亮女，夏侯骏妻）","zi":"司马亮女，夏侯骏妻","gender":"女","family":"河内司马氏","birth":"","death":"","note":"司马亮之女"},{"id":"P016","name":"司马伷","zi":"字子将，琅邪王，谥武","gender":"男","family":"河内司马氏","birth":"227","death":"283","note":"宣帝第五子，伏夫人所生。《晋书》卷38《琅邪王伷传》：太康四年薨，时年五十七"},{"id":"P017","name":"诸葛太妃","zi":"诸葛诞之女","gender":"女","family":"-","birth":"","death":"","note":"司马伷妃，诸葛诞之女，司马觐、司马澹、司马繇、司马漼之母。《晋书》卷38：澹母诸葛太妃；繇外祖诸葛诞"},{"id":"P018","name":"司马觐","zi":"字思祖，琅邪王，谥恭","gender":"男","family":"河内司马氏","birth":"256","death":"290","note":"司马伷长子。《晋书》卷38：太熙元年薨，时年三十五"},{"id":"P019","name":"夏侯光姬","zi":"小字铜环","gender":"女","family":"-","birth":"","death":"307","note":"夏侯庄女，司马觐妃，生司马睿。《晋书》卷31《后妃传》"},{"id":"P020","name":"司马睿","zi":"字景文，谥元皇帝","gender":"男","family":"河内司马氏","birth":"276","death":"323","note":"东晋元帝。《晋书》卷6《元帝纪》"},{"id":"P021","name":"夏侯霸","zi":"字仲权","gender":"男","family":"-","birth":"","death":"","note":"（由于行政区划调整，这里不填了）"},{"id":"P022","name":"夏侯威","zi":"字季权","gender":"男","family":"-","birth":"","death":"","note":"《三国志·魏书·夏侯渊传》注引《世语》：历荆、兖二州刺史"},{"id":"P023","name":"夏侯骏","zi":"字长容","gender":"男","family":"-","birth":"","death":"","note":"夏侯威长子，并州刺史。见《三国志·夏侯渊传》注"},{"id":"P024","name":"夏侯庄","zi":"字仲容","gender":"男","family":"-","birth":"","death":"","note":"夏侯威次子，淮南太守。《晋书》卷55《夏侯湛传》"},{"id":"P025","name":"羊氏（羊耽女，夏侯庄妻）","zi":"羊耽女，夏侯庄妻","gender":"女","family":"泰山羊氏","birth":"","death":"","note":"羊耽与辛宪英之女"},{"id":"P026","name":"夏侯湛","zi":"字孝若","gender":"男","family":"-","birth":"243","death":"291","note":"《晋书》卷55《夏侯湛传》；潘岳《夏侯常侍诔》：元康元年夏五月卒，春秋四十九"},{"id":"P027","name":"夏侯氏（夏侯庄女，王正妻）","zi":"夏侯庄女，王正妻","gender":"女","family":"-","birth":"","death":"","note":"夏侯庄次女，王正妻，王羲之祖母"},{"id":"P028","name":"司马澹","zi":"字思弘，武陵王，谥庄","gender":"男","family":"河内司马氏","birth":"","death":"","note":"司马伷次子。《晋书》卷38·武陵庄王澹传"},{"id":"P029","name":"郭氏（司马澹妻）","zi":"贾后表妹，武陵王澹妻","gender":"女","family":"太原郭氏","birth":"","death":"","note":"司马澹妻，贾后内妹。《晋书》卷38：澹妻郭氏，贾后内妹也"},{"id":"P030","name":"司马繇","zi":"字思玄，东安王","gender":"男","family":"河内司马氏","birth":"","death":"","note":"司马伷子。《晋书》卷38·东安王繇传"},{"id":"P031","name":"司马干","zi":"字子良，平原王","gender":"男","family":"河内司马氏","birth":"","death":"","note":"宣帝司马懿子，张皇后生。《晋书》卷38·平原王幹传：永嘉五年薨，时年八十"},{"id":"P032","name":"司马骏","zi":"字子臧，扶风王，谥武","gender":"男","family":"河内司马氏","birth":"","death":"","note":"宣帝司马懿子，伏夫人生。《晋书》卷38·扶风王骏传"},{"id":"P033","name":"司马肜","zi":"字子徽，梁王，谥孝","gender":"男","family":"河内司马氏","birth":"","death":"","note":"宣帝司马懿子，张夫人生。《晋书》卷38·梁王肜传"},{"id":"P034","name":"司马伦","zi":"字子彝，赵王","gender":"男","family":"河内司马氏","birth":"","death":"","note":"宣帝司马懿子，柏夫人生。《晋书》卷59·赵王伦传"},{"id":"P035","name":"司马炎","zi":"字安世，谥武帝","gender":"男","family":"河内司马氏","birth":"236","death":"290","note":"司马昭长子，西晋开国皇帝"},{"id":"P036","name":"司马攸","zi":"字大猷，齐王，谥献","gender":"男","family":"河内司马氏","birth":"248","death":"283","note":"司马昭次子，过继给伯父司马师为嗣；尚贾充与李婉之女贾荃（一名褒）为妃（《晋书》卷40·贾充传）"},{"id":"P037","name":"司马衷","zi":"字正度，谥孝惠帝","gender":"男","family":"河内司马氏","birth":"259","death":"307","note":"司马炎与杨艳之子"},{"id":"P038","name":"司马遹","zi":"字熙祖，小字沙门，谥愍怀太子","gender":"男","family":"河内司马氏","birth":"278","death":"300","note":"愍怀太子，晋惠帝司马衷长子，母谢玖（武帝才人，惠帝即位拜淑媛）；幼而聪慧，武帝钟爱；太熙元年（290年）立为皇太子；元康九年（299年）贾后废为庶人，幽于金墉，永康元年（300年）为贾后所害，追谥愍怀；太子妃王惠风（《晋书》卷53·愍怀太子传）"},{"id":"P039","name":"司马柬","zi":"字弘度，秦王，谥献","gender":"男","family":"河内司马氏","birth":"","death":"","note":"武帝与杨艳之子，武帝第三子"},{"id":"P040","name":"司马乂","zi":"字士度，长沙王，谥厉","gender":"男","family":"河内司马氏","birth":"","death":"","note":"武帝子，司马玮同母弟，母审美人"},{"id":"P041","name":"司马玮","zi":"字彦度，楚王，谥隐","gender":"男","family":"河内司马氏","birth":"","death":"","note":"武帝子，司马乂同母兄，母审美人"},{"id":"P042","name":"司马允","zi":"字钦度，淮南王，谥忠壮","gender":"男","family":"河内司马氏","birth":"","death":"","note":"武帝子，司马晏同母兄，母李夫人"},{"id":"P043","name":"司马晏","zi":"字平度，吴王","gender":"男","family":"河内司马氏","birth":"","death":"","note":"淮南王允同母弟，母李夫人"},{"id":"P044","name":"司马炽","zi":"字丰度，原豫章王，谥孝怀帝","gender":"男","family":"河内司马氏","birth":"","death":"","note":"武帝子"},{"id":"P045","name":"司马颖","zi":"字章度，成都王，无谥号","gender":"男","family":"河内司马氏","birth":"","death":"","note":""},{"id":"P046","name":"乐氏（乐广女，司马颖妃）","zi":"乐广女，司马颖妃","gender":"女","family":"-","birth":"","death":"","note":""},{"id":"P047","name":"司马冏","zi":"字景治，齐王，谥武闵","gender":"男","family":"河内司马氏","birth":"","death":"303","note":"司马攸庶子，第三子或第四子，八王之乱参与者"},{"id":"P048","name":"司马蕤","zi":"字景回","gender":"男","family":"河内司马氏","birth":"","death":"301","note":"司马冏之兄，司马攸庶长子；司马攸传：三子：蕤、贊、寔。晋书校勘记：據下廣德傳謂贊為第五子，寔為第二子。遼東悼惠王定國传：齊王攸以長子蕤為嗣。"},{"id":"P049","name":"司马寔","zi":"字景深","gender":"男","family":"河内司马氏","birth":"","death":"","note":"司马蕤之弟，司马攸次子（晋书校勘记）"},{"id":"P050","name":"司马邺","zi":"字彦旗，谥孝愍帝","gender":"男","family":"河内司马氏","birth":"","death":"","note":"司马晏之子，过继给司马柬"},{"id":"P051","name":"繁昌公主","zi":"","gender":"女","family":"河内司马氏","birth":"","death":"","note":"武帝之女，下嫁卫瓘第四子卫宣（《晋书》卷36·卫瓘传）"},{"id":"P052","name":"卫宣","zi":"","gender":"男","family":"河东卫氏","birth":"","death":"","note":"娶公主；卫瓘第四子，尚武帝女繁昌公主，后有酒色之过，杨骏欲使帝夺婚未成而宣病亡（《晋书》卷36·卫瓘传）"},{"id":"P053","name":"常山公主","zi":"","gender":"女","family":"河内司马氏","birth":"","death":"","note":"各说不一，暂且认为是武帝妹妹，即司马昭庶女，生母不明；《晋书》卷42·王浑传附王济传明确记载\"尚常山公主\"，即王济之妻"},{"id":"P054","name":"王济","zi":"字武子","gender":"男","family":"太原王氏","birth":"","death":"","note":"字武子，王浑次子，尚常山公主，累迁侍中，与姊夫和峤、裴楷齐名，性豪侈；终无子，唯有庶子二人（卓、聿）；年四十六，先浑卒，具体纪年原文未载，追赠骠骑将军（《晋书》卷42·王浑传附王济传）"},{"id":"P055","name":"襄城公主","zi":"字脩袆","gender":"女","family":"河内司马氏","birth":"","death":"","note":"武帝之女，嫁王敦"},{"id":"P056","name":"王敦","zi":"字处仲","gender":"男","family":"琅琊王氏","birth":"","death":"","note":""},{"id":"P057","name":"颍川公主","zi":"","gender":"女","family":"河内司马氏","birth":"","death":"","note":"武帝女，嫁王粹"},{"id":"P058","name":"王濬","zi":"","gender":"男","family":"-","birth":"","death":"","note":""},{"id":"P059","name":"王畅","zi":"","gender":"男","family":"-","birth":"","death":"","note":"王濬子，非长子"},{"id":"P060","name":"王粹","zi":"","gender":"男","family":"-","birth":"","death":"","note":"王畅子，二十四友之一，后在成都王麾下"},{"id":"P061","name":"荥阳公主","zi":"","gender":"女","family":"河内司马氏","birth":"","death":"","note":"武帝女，嫁华恒"},{"id":"P062","name":"华恒","zi":"字敬则","gender":"男","family":"-","birth":"","death":"","note":"华廙之子"},{"id":"P063","name":"武安公主","zi":"","gender":"女","family":"河内司马氏","birth":"","death":"","note":"武帝与胡芳女，嫁温羡"},{"id":"P064","name":"温羡","zi":"","gender":"男","family":"-","birth":"","death":"","note":""},{"id":"P065","name":"杨骏","zi":"字文长","gender":"男","family":"弘农杨氏","birth":"","death":"291","note":"杨芷之父，后父居重位；惠帝即位为辅政，贾后令孟观、李肇构之，元康元年（291年）废骏，骏逃于马厩被戟杀，亲党皆夷三族（《晋书》卷40·杨骏传）"},{"id":"P066","name":"杨氏（杨骏女，裴瓒妻）","zi":"杨骏女，裴瓒妻","gender":"女","family":"弘农杨氏","birth":"","death":"","note":"杨骏之女，裴楷次子裴瓒之妻；“楷子瓒娶杨骏女”，名未载（《晋书》卷35·裴秀传）"},{"id":"P067","name":"杨珧","zi":"字文琚","gender":"男","family":"弘农杨氏","birth":"","death":"291","note":"杨骏之弟；字文琚，历位尚书令、卫将军；与骏同被诛（元康元年/291年），临刑称冤（《晋书》卷40·杨骏传）"},{"id":"P068","name":"杨济","zi":"字文通","gender":"男","family":"弘农杨氏","birth":"","death":"291","note":"杨珧之弟；字文通，历位镇南、征北将军，迁太子太傅；与诸兄俱见害（元康元年/291年）（《晋书》卷40·杨骏传）"},{"id":"P069","name":"杨艳","zi":"字琼芝，谥武元皇后","gender":"女","family":"弘农杨氏","birth":"238","death":"274","note":"司马炎原配皇后，司马衷生母"},{"id":"P070","name":"杨芷","zi":"字季兰，谥武悼皇后","gender":"女","family":"弘农杨氏","birth":"259","death":"292","note":"司马炎继立皇后，杨骏之女"},{"id":"P071","name":"贾充","zi":"字公闾","gender":"男","family":"平阳贾氏","birth":"217","death":"282","note":"西晋开国功臣，定律令；父贾逵，魏豫州刺史、阳里亭侯；历官至司空、太尉、录尚书事，封鲁郡公；太康三年（282年）四月薨，时年六十六，赠太宰，谥曰武（《晋书》卷40·贾充传）"},{"id":"P072","name":"李婉","zi":"字淑文","gender":"女","family":"-","birth":"","death":"","note":"（ 《世说新语・贤媛篇》刘孝标注引《妇人集》曰：“充妻李氏，名婉，字淑文。”）贾充原配，父李丰因政治事件被诛后受牵连离异；字号不详，生贾充二女：褒（一名荃）、裕（一名浚，本表未收录）；父李丰诛后坐流徙离异；武帝践阼后大赦得还，帝特诏充可置左右夫人，充母亦敕充迎李氏，然郭槐怒阻，充未敢迎，为其筑室于永年里而不往来；及郭槐薨、贾后废后，方得与贾充合葬；撰有《女训》行于世（《晋书》卷40·贾充传）"},{"id":"P073","name":"贾荃","zi":"一名贾褒","gender":"女","family":"平阳贾氏","birth":"","death":"","note":"贾充与李婉之女，司马攸（齐王，司马冏之父）之妃；“荃恚愤而薨”（《晋书》卷40·贾充传）"},{"id":"P074","name":"贾南风","zi":"","gender":"女","family":"平阳贾氏","birth":"257","death":"300","note":"贾充与郭槐之女，晋惠帝皇后，八王之乱关键人物；本卷载其专擅朝政，加充庙备六佾之乐；赵王伦废后，贾后服金酒而死（《晋书》卷40·贾充传）"},{"id":"P075","name":"贾午","zi":"","gender":"女","family":"平阳贾氏","birth":"","death":"","note":"贾充与郭槐之女（充少女，即幼女）；与韩寿私通，充察觉后正式以女妻寿，生贾谧；赵王伦废后事发，午亦伏诛（考竟用大杖）（《晋书》卷40·贾充传）"},{"id":"P076","name":"韩寿","zi":"字德真","gender":"男","family":"-","birth":"","death":"","note":"魏司徒韩暨曾孙，美姿仪；为贾充掾属，与贾午私通，充知情后以女正式妻之；官至散骑常侍、河南尹，元康初（约291年前后）卒，赠骠骑将军；赵王伦败后，寿诸弟及子侄多人因谧事伏诛（《晋书》卷40·贾充传）"},{"id":"P077","name":"贾黎民","zi":"","gender":"男","family":"平阳贾氏","birth":"","death":"","note":"贾充与郭槐早夭之子；年三岁，乳母被郭槐鞭杀，黎民恋念发病而死；后郭槐又生一男亦因疑忌乳母被害而死，贾充遂无胤嗣（《晋书》卷40·贾充传）"},{"id":"P078","name":"贾谧","zi":"字长渊","gender":"","family":"平阳贾氏","birth":"","death":"","note":"本名韩谧，父韩寿、母贾午，因贾充绝嗣，郭槐奏立为亡子黎民之后以奉充祀，改姓贾，封鲁公世孙；为\"二十四友\"之核心召集人物，宾客辐凑；历散骑常侍、后军将军、秘书监（掌国史，主张晋书断限用泰始说）、侍中；与愍怀太子结怨并谮害之；赵王伦废贾后时，谧被诛于钟（锺）下（《晋书》卷40·贾充传）"},{"id":"P079","name":"贾模","zi":"字思范","gender":"男","family":"平阳贾氏","birth":"","death":"","note":"贾充从子（遵之弟）；豫诛杨骏，封平阳乡侯；历散骑常侍、侍中、光禄大夫；卒追赠车骑将军、开府仪同三司，谥曰成；子游字彦将嗣（《晋书》卷40·贾充传）"},{"id":"P080","name":"裴潜","zi":"字文行","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴秀之父，魏尚书令（《晋书》卷35·裴秀传），裴徽的兄弟【排行？】"},{"id":"P081","name":"裴徽","zi":"字文季","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴楷父亲，裴秀叔父"},{"id":"P082","name":"裴秀","zi":"字季彦","gender":"男","family":"河东裴氏","birth":"224","death":"271","note":"河东闻喜人，祖裴茂（汉尚书令）、父裴潜（魏尚书令）、叔父裴徽；少好学，八岁能属文；议五等爵、作《禹贡地域图》十八篇、创制朝仪；晋武帝受禅封钜鹿郡公，历尚书令、司空；泰始七年（271年）薨，时年四十八；二子浚、頠（《晋书》卷35·裴秀传）；妻郭配女（《三国志·郭淮传》注引《晋诸公赞》）"},{"id":"P083","name":"裴楷","zi":"字叔则","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴秀从弟，父裴徽（魏冀州刺史）；明悟有识量，尤精《老》《易》，少与王戎齐名，时人谓之“玉人”；历吏部郎、侍中、中书令、光禄大夫；五子舆、瓒、宪、礼、逊；与杨骏为儿女亲家（楷子瓒娶杨骏女），是王浑之婿（楷妻为王浑女）、王济之姐夫，长子舆娶司马亮女，女适卫瓘子（《晋书》卷35·裴秀传）"},{"id":"P084","name":"裴宪","zi":"字景思","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴楷子。《晋书》卷35《裴秀传》附"},{"id":"P085","name":"裴绰","zi":"字季舒","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴徽幼子（徽少子），裴楷之弟（“楷弟绰”）；器宇宏旷，官至黄门侍郎、长水校尉，时人比之王澄；子裴遐；排行第四（长兄裴黎、次兄裴康、兄裴楷）（《晋书》卷35·裴秀传）"},{"id":"P086","name":"裴遐","zi":"字叔道","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴徽之孙、裴绰之子、裴楷之侄；《晋书》卷35·裴秀传“绰子遐，善言玄理，音辞清畅，泠然若琴瑟”；少有理称，辟司空掾、散骑郎；娶太尉王衍第四女（《世说新语·文学》注引《晋诸公赞》作“父纬，长水校尉”，疑“纬”为“绰”之误）"},{"id":"P087","name":"裴氏（裴楷女，卫岳妻）","zi":"裴楷女，卫岳妻","gender":"女","family":"河东裴氏","birth":"","death":"","note":"裴楷之女，母王浑女（王氏·裴楷妻）；嫁卫瓘子卫岳；《晋书》卷35·裴秀传“女适卫瓘子”；卫氏家谱称卫瓘三子卫岳娶裴楷女，晋书本传未明指哪位儿子"},{"id":"P088","name":"裴頠","zi":"字逸民","gender":"男","family":"河东裴氏","birth":"267","death":"300","note":"裴秀次子；兄浚早卒，贾充表“秀有佐命之勋…頠才德英茂”，诏袭钜鹿郡公爵；累迁侍中、尚书左仆射、光禄大夫；著《崇有论》《辩才论》；因谏阻赵王伦、与张华议废贾后，永康元年（300年）废贾后之际被赵王伦所诛，时年三十四；二子嵩、该（《晋书》卷35·裴秀传）"},{"id":"P089","name":"裴瓒","zi":"字国宝","gender":"男","family":"河东裴氏","birth":"","death":"291","note":"裴楷次子，字国宝，中书郎，风神高迈；娶杨骏女；杨骏之诛（291年）为乱兵所害（《晋书》卷35·裴秀传）"},{"id":"P090","name":"裴舆","zi":"字祖明","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴楷长子，字祖明，少袭父爵，官至散骑侍郎；先娶汝南王司马亮女（《晋书》卷35·裴秀传）"},{"id":"P091","name":"卫瓘","zi":"字伯玉","gender":"男","family":"河东卫氏","birth":"220","death":"291","note":"魏尚书卫觊之子；历廷尉、司空、太保等职；楚王玮矫诏被杀，时年七十二（《晋书》卷36·卫瓘传）"},{"id":"P092","name":"卫恒","zi":"字巨山","gender":"男","family":"河东卫氏","birth":"","death":"291","note":"娶王浑女，何劭是其嫂父；卫瓘之子，善草隶书，作《四体书势》；瓘被害时同罹难（《晋书》卷36·卫瓘传）"},{"id":"P093","name":"卫岳","zi":"","gender":"男","family":"河东卫氏","birth":"","death":"291","note":"卫瓘第三子；《晋书》卷36·卫瓘传“与子恒、岳、裔及孙等九人同被害”，元康元年（291年）与父同被司马玮矫诏所杀；娶河东裴氏裴楷之女（《晋书》卷35·裴秀传“女适卫瓘子”）；排行据卫氏家谱系统（书法网《卫氏渊源》：卫恒次子、卫岳三子、卫宣四子、卫庭五子；老家河南家谱馆亦载卫瓘六男、卫恒次子、卫宣四子），晋书本传未明指；生母未载"},{"id":"P094","name":"卫玠","zi":"字叔宝","gender":"男","family":"河东卫氏","birth":"286","death":"312","note":"卫恒次子，好清谈、容貌俊美；永嘉六年（312年）卒于豫章，时年二十七，虚岁推算生年（《晋书》卷36·卫玠传）"},{"id":"P095","name":"乐氏（乐广女，卫玠妻）","zi":"乐广女，卫玠妻","gender":"女","family":"-","birth":"","death":"","note":"乐广之女，卫玠原配，先玠而卒（《晋书》卷36·卫玠传）"},{"id":"P096","name":"山氏（山简女，卫玠继室）","zi":"山简女，卫玠继室","gender":"女","family":"-","birth":"","death":"","note":"山简之女，卫玠原配先亡后续娶为继室（《晋书》卷36·卫玠传）"},{"id":"P097","name":"乐广","zi":"字彦辅","gender":"男","family":"-","birth":"","death":"304","note":"卫玠和司马颖的岳父；《晋书》卷35·裴秀传：初在河南，乐广侨居郡界未知名，裴楷见而奇之，致之于宰府"},{"id":"P098","name":"山简","zi":"字季伦","gender":"男","family":"-","birth":"253","death":"312","note":"山涛第五子（晋书山涛传：有五子：該、淳、允、謨、簡。）"},{"id":"P099","name":"山涛","zi":"字巨源","gender":"男","family":"-","birth":"205","death":"283","note":""},{"id":"P100","name":"郭淮","zi":"字伯济","gender":"男","family":"太原郭氏","birth":"","death":"","note":"郭配、郭镇之兄，郭槐伯父（《三国志·郭淮传》注引《晋诸公赞》）"},{"id":"P101","name":"郭配","zi":"字仲南","gender":"男","family":"太原郭氏","birth":"","death":"","note":"郭槐的父亲，任城阳太守（《晋书》卷40·贾充传）"},{"id":"P102","name":"郭镇","zi":"字季南","gender":"男","family":"太原郭氏","birth":"","death":"","note":"郭配之弟，郭槐叔父，官谒者仆射；子奕（《晋书》作大业）（《三国志·郭淮传》注引《晋诸公赞》）"},{"id":"P103","name":"郭展","zi":"字泰舒","gender":"男","family":"太原郭氏","birth":"","death":"","note":"郭配之子，郭槐兄弟；有器度干用，历职著绩，终于太仆（《三国志·郭淮传》注引《晋诸公赞》）"},{"id":"P104","name":"郭豫","zi":"字泰宁","gender":"男","family":"太原郭氏","birth":"","death":"","note":"郭槐的兄弟，王衍的岳父。（《三国志·郭淮传》注引《晋诸公赞》）"},{"id":"P105","name":"郭奕","zi":"字泰业【晋书本传作大业】","gender":"男","family":"太原郭氏","birth":"","death":"","note":"字大业（《三国志》注引作\"弈\"，字\"泰业\"，今从《晋书》作\"奕\"\"大业\"）；郭镇之子，郭配之侄，郭槐从兄弟；山涛启事称其\"高简有雅量\"，历位雍州刺史、尚书；外甥刘舆、刘琨（《三国志·郭淮传》注引《晋诸公赞》；《晋书》卷62·刘舆传）"},{"id":"P106","name":"郭氏（郭镇女，刘蕃妻）","zi":"郭镇女，刘蕃妻","gender":"女","family":"太原郭氏","birth":"","death":"","note":"推定为郭镇之女、郭奕姊妹；据《晋书》卷62·刘舆传\"刘舆……与琨并尚书郭奕之甥\"推知其母系出郭奕一族，具体是否为郭镇亲女原文未直接明言，姑列于此供参考"},{"id":"P107","name":"刘舆","zi":"字庆孙","gender":"男","family":"-","birth":"","death":"","note":"隽朗有才局，与刘琨并为尚书郭奕之甥，名著当时；亦见于《晋书》卷40·贾谧传\"二十四友\"名单（《晋书》卷62·刘舆传）"},{"id":"P108","name":"刘琨","zi":"字越石","gender":"男","family":"-","birth":"","death":"","note":"与刘舆并为尚书郭奕之甥；亦见于《晋书》卷40·贾谧传\"二十四友\"名单（《晋书》卷62·刘舆传）"},{"id":"P109","name":"郭槐","zi":"字媛韶","gender":"女","family":"太原郭氏","birth":"237","death":"296","note":"贾充继室，贾南风生母，性妒悍；父郭配，城阳太守；性妒忌，两度因疑忌乳母而害死充二子（黎民及另一未名子），致贾充绝嗣；充薨后奏立外孙韩谧为亡子黎民后以奉充祀；初封广城君，及薨谥宣（《晋书》卷40·贾充传）；与郭氏（裴秀妻）、郭展为同产兄弟姊妹（《三国志·郭淮传》注引《晋诸公赞》）"},{"id":"P110","name":"郭氏（郭配女，裴秀妻）","zi":"郭配女，裴秀妻","gender":"女","family":"太原郭氏","birth":"","death":"","note":"郭槐的姐妹；父郭配，城阳太守（《三国志·郭淮传》注引《晋诸公赞》：\"裴秀、贾充皆配女壻\"）"},{"id":"P111","name":"郭氏（郭豫女，王衍妻）","zi":"郭豫女，王衍妻","gender":"女","family":"太原郭氏","birth":"","death":"","note":"郭豫之女，适王衍（《三国志·郭淮传》注引《晋诸公赞》：\"女适王衍\"）"},{"id":"P112","name":"郭彰","zi":"字叔武","gender":"男","family":"太原郭氏","birth":"","death":"","note":"郭槐从弟，郭槐待之如亲弟，二十四友之一，与贾谧合称“贾、郭”；贾后从舅，历散骑常侍、尚书、卫将军，封冠军县侯；贾后专朝时豫参权势；卒谥烈（《晋书》卷40·贾充传）"},{"id":"P113","name":"王浑","zi":"字玄冲","gender":"男","family":"太原王氏","birth":"223","death":"297","note":"太原晋阳人，魏司空王昶之子；历仕曹魏至西晋，官至司徒、录尚书事，封京陵侯；元康七年（297年）薨，时年七十五，虚岁推算生年，谥曰元；长子尚早亡，次子济嗣（《晋书》卷42·王浑传）"},{"id":"P114","name":"钟琰","zi":"字琰（名不详）","gender":"女","family":"-","birth":"","death":"","note":"王浑妻，生王济"},{"id":"P115","name":"王氏（王浑女，卫恒妻）","zi":"王浑女，卫恒妻","gender":"女","family":"太原王氏","birth":"","death":"","note":"王济之姊妹，据\"王济，玠之舅也\"推知为卫恒妻、卫玠生母，原文未直接明言（《晋书》卷36·卫玠传）"},{"id":"P116","name":"王氏（王浑女，和峤妻）","zi":"王浑女，和峤妻","gender":"女","family":"太原王氏","birth":"","death":"","note":"王浑之女，王济之姐，嫁和峤（汝南西平人）；《晋书》卷42·王济传“与姐夫和峤及裴楷齐名”，证和峤为王济姐夫、王氏为王济之姐；生母未载"},{"id":"P117","name":"和峤","zi":"字长舆","gender":"男","family":"-","birth":"","death":"","note":"是王济的姐夫（王济传）"},{"id":"P118","name":"王氏（王浑女，裴楷妻）","zi":"王浑女，裴楷妻","gender":"女","family":"太原王氏","birth":"","death":"","note":"王浑之女，王济之姐，嫁河东裴氏裴楷；《晋书》卷42·王济传“与姐夫和峤及裴楷齐名”；《晋书》卷35·裴秀传“匿于妻父王浑家”，楷妻为王浑女；为裴舆、裴瓒、裴氏（卫岳妻）之母；生母未载"},{"id":"P119","name":"荀勖","zi":"字公曾","gender":"男","family":"颍川荀氏","birth":"","death":"","note":""},{"id":"P120","name":"荀藩","zi":"字大坚","gender":"男","family":"颍川荀氏","birth":"","death":"","note":"荀勖之子"},{"id":"P121","name":"荀组","zi":"字大章","gender":"男","family":"颍川荀氏","birth":"","death":"","note":"荀勖之子，荀藩之弟"},{"id":"P122","name":"荀氏（荀勖女，司马晏妃）","zi":"荀勖女，司马晏妃","gender":"女","family":"颍川荀氏","birth":"","death":"","note":"荀勖之女"},{"id":"P123","name":"王衍","zi":"字夷甫","gender":"男","family":"琅琊王氏","birth":"","death":"","note":"郭豫女婿（《三国志·郭淮传》注引《晋诸公赞》：\"（郭豫）女适王衍\"）；羊祜从甥（晋书·羊祜传"},{"id":"P124","name":"王惠风","zi":"字惠风（名不详）","gender":"女","family":"琅琊王氏","birth":"","death":"311","note":"愍怀太子妃，太尉王衍之女，母郭氏（郭豫之女）；贞婉有志节。太子被废，王衍请绝婚，惠风号哭而归。刘曜陷洛阳（311年），以惠风赐其将乔属，惠风拔剑拒之，为属所杀（《晋书》卷96·列女传）"},{"id":"P125","name":"王景风","zi":"","gender":"女","family":"琅琊王氏","birth":"","death":"","note":"王衍长女，貌美；贾后为贾谧聘之（《晋书》卷53·愍怀太子传）"},{"id":"P126","name":"王氏（王衍女，裴遐妻）","zi":"王衍女，裴遐妻","gender":"女","family":"琅琊王氏","birth":"","death":"","note":"王衍第四女，适裴遐（司空掾、散骑郎）；《世说新语·文学》注引《永嘉流人名》“衍字夷甫，第四女适遐也”；夫裴遐为裴绰之子（《世说新语注·文学第四·19》；《晋书》卷35·裴秀传）"},{"id":"P127","name":"王戎","zi":"字濬冲","gender":"男","family":"琅琊王氏","birth":"","death":"","note":""},{"id":"P128","name":"王氏（王戎女，裴頠妻）","zi":"王戎女，裴頠妻","gender":"女","family":"琅琊王氏","birth":"","death":"","note":"王戎长女"}],"marriages":[{"id":"M001","husbandId":"P001","husbandName":"司马昭","wifeId":"P002","wifeName":"王元姬","type":"妻","order":"1"},{"id":"M002","husbandId":"P003","husbandName":"司马师","wifeId":"P004","wifeName":"羊徽瑜","type":"继室","order":"3"},{"id":"M003","husbandId":"P035","husbandName":"司马炎","wifeId":"P069","wifeName":"杨艳","type":"妻","order":"1"},{"id":"M004","husbandId":"P035","husbandName":"司马炎","wifeId":"P070","wifeName":"杨芷","type":"继室","order":"2"},{"id":"M005","husbandId":"P092","husbandName":"卫恒","wifeId":"P115","wifeName":"王氏（王浑女，卫恒妻）","type":"妻","order":"1"},{"id":"M006","husbandId":"P052","husbandName":"卫宣","wifeId":"P051","wifeName":"繁昌公主","type":"妻","order":"1"},{"id":"M007","husbandId":"P094","husbandName":"卫玠","wifeId":"P095","wifeName":"乐氏（乐广女，卫玠妻）","type":"妻","order":"1"},{"id":"M008","husbandId":"P094","husbandName":"卫玠","wifeId":"P096","wifeName":"山氏（山简女，卫玠继室）","type":"继室","order":"2"},{"id":"M009","husbandId":"P054","husbandName":"王济","wifeId":"P053","wifeName":"常山公主","type":"妻","order":"1"},{"id":"M010","husbandId":"P071","husbandName":"贾充","wifeId":"P072","wifeName":"李婉","type":"妻","order":"1"},{"id":"M011","husbandId":"P071","husbandName":"贾充","wifeId":"P109","wifeName":"郭槐","type":"继室","order":"2"},{"id":"M012","husbandId":"P076","husbandName":"韩寿","wifeId":"P075","wifeName":"贾午","type":"妻","order":"1"},{"id":"M013","husbandId":"P036","husbandName":"司马攸","wifeId":"P073","wifeName":"贾荃","type":"妻","order":"1"},{"id":"M014","husbandId":"P082","husbandName":"裴秀","wifeId":"P110","wifeName":"郭氏（郭配女，裴秀妻）","type":"妻","order":"1"},{"id":"M015","husbandId":"P123","husbandName":"王衍","wifeId":"P111","wifeName":"郭氏（郭豫女，王衍妻）","type":"妻","order":"1"},{"id":"M016","husbandId":"P088","husbandName":"裴頠","wifeId":"P128","wifeName":"王氏（王戎女，裴頠妻）","type":"妻","order":"1"},{"id":"M017","husbandId":"P045","husbandName":"司马颖","wifeId":"P046","wifeName":"乐氏（乐广女，司马颖妃）","type":"妻","order":"1"},{"id":"M018","husbandId":"P043","husbandName":"司马晏","wifeId":"P122","wifeName":"荀氏（荀勖女，司马晏妃）","type":"妻","order":"1"},{"id":"M019","husbandId":"P056","husbandName":"王敦","wifeId":"P055","wifeName":"襄城公主","type":"妻","order":"1"},{"id":"M020","husbandId":"P037","husbandName":"司马衷","wifeId":"P074","wifeName":"贾南风","type":"妻","order":"1"},{"id":"M021","husbandId":"P037","husbandName":"司马衷","wifeId":"-","wifeName":"谢玖","type":"妾","order":"-"},{"id":"M022","husbandId":"P037","husbandName":"司马衷","wifeId":"P012","wifeName":"羊献容","type":"继室","order":"2"},{"id":"M023","husbandId":"P113","husbandName":"王浑","wifeId":"P114","wifeName":"钟琰","type":"妻","order":"1"},{"id":"M024","husbandId":"P035","husbandName":"司马炎","wifeId":"-","wifeName":"审美人","type":"妾","order":"-"},{"id":"M025","husbandId":"P035","husbandName":"司马炎","wifeId":"-","wifeName":"程才人","type":"妾","order":"-"},{"id":"M026","husbandId":"P035","husbandName":"司马炎","wifeId":"-","wifeName":"李夫人","type":"妾","order":"-"},{"id":"M027","husbandId":"P035","husbandName":"司马炎","wifeId":"-","wifeName":"胡芳","type":"妾","order":"-"},{"id":"M028","husbandId":"P035","husbandName":"司马炎","wifeId":"-","wifeName":"王媛姬","type":"妾","order":"-"},{"id":"M029","husbandId":"P060","husbandName":"王粹","wifeId":"P057","wifeName":"颍川公主","type":"妻","order":"1"},{"id":"M030","husbandId":"P062","husbandName":"华恒","wifeId":"P061","wifeName":"荥阳公主","type":"妻","order":"1"},{"id":"M031","husbandId":"P064","husbandName":"温羡","wifeId":"P063","wifeName":"武安公主","type":"妻","order":"1"},{"id":"M032","husbandId":"P089","husbandName":"裴瓒","wifeId":"P066","wifeName":"杨氏（杨骏女，裴瓒妻）","type":"妻","order":"1"},{"id":"M033","husbandId":"P117","husbandName":"和峤","wifeId":"P116","wifeName":"王氏（王浑女，和峤妻）","type":"妻","order":"1"},{"id":"M034","husbandId":"P083","husbandName":"裴楷","wifeId":"P118","wifeName":"王氏（王浑女，裴楷妻）","type":"妻","order":"1"},{"id":"M035","husbandId":"P093","husbandName":"卫岳","wifeId":"P087","wifeName":"裴氏（裴楷女，卫岳妻）","type":"妻","order":"1"},{"id":"M036","husbandId":"P038","husbandName":"司马遹","wifeId":"P124","wifeName":"王惠风","type":"妻","order":"1"},{"id":"M037","husbandId":"P078","husbandName":"贾谧","wifeId":"P125","wifeName":"王景风","type":"妻","order":"1"},{"id":"M038","husbandId":"P086","husbandName":"裴遐","wifeId":"P126","wifeName":"王氏（王衍女，裴遐妻）","type":"妻","order":"1"},{"id":"M039","husbandId":"P005","husbandName":"羊衜","wifeId":"-","wifeName":"孔氏（孔融女）","type":"妻","order":"1"},{"id":"M040","husbandId":"P005","husbandName":"羊衜","wifeId":"-","wifeName":"蔡氏","type":"继室","order":"2"},{"id":"M041","husbandId":"P006","husbandName":"羊耽","wifeId":"-","wifeName":"辛宪英","type":"妻","order":"1"},{"id":"M042","husbandId":"P007","husbandName":"羊祜","wifeId":"P008","wifeName":"夏侯氏（夏侯霸女，羊祜妻）","type":"妻","order":"1"},{"id":"M043","husbandId":"P018","husbandName":"司马觐","wifeId":"P019","wifeName":"夏侯光姬","type":"妻","order":"1"},{"id":"M044","husbandId":"P024","husbandName":"夏侯庄","wifeId":"P025","wifeName":"羊氏（羊耽女，夏侯庄妻）","type":"妻","order":"1"},{"id":"M045","husbandId":"P023","husbandName":"夏侯骏","wifeId":"P015","wifeName":"司马氏（司马亮女，夏侯骏妻）","type":"妻","order":"1"},{"id":"M046","husbandId":"P090","husbandName":"裴舆","wifeId":"P014","wifeName":"司马氏（司马亮女，裴舆妻）","type":"妻","order":"1"},{"id":"M047","husbandId":"P016","husbandName":"司马伷","wifeId":"P017","wifeName":"诸葛太妃","type":"妻","order":"1"},{"id":"M048","husbandId":"P028","husbandName":"司马澹","wifeId":"P029","wifeName":"郭氏（司马澹妻）","type":"妻","order":"1"}],"children":[{"id":"C001","childId":"P035","childName":"司马炎","fatherId":"P001","fatherName":"司马昭","motherId":"P002","motherName":"王元姬","rel":"亲生","rank":"1"},{"id":"C002","childId":"P036","childName":"司马攸","fatherId":"P001","fatherName":"司马昭","motherId":"P002","motherName":"王元姬","rel":"亲生","rank":"3"},{"id":"C003","childId":"P036","childName":"司马攸","fatherId":"P003","fatherName":"司马师","motherId":"P004","motherName":"羊徽瑜","rel":"过继入","rank":""},{"id":"C004","childId":"P037","childName":"司马衷","fatherId":"P035","fatherName":"司马炎","motherId":"P069","motherName":"杨艳","rel":"亲生","rank":"2"},{"id":"C005","childId":"P070","childName":"杨芷","fatherId":"P065","fatherName":"杨骏","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C006","childId":"P092","childName":"卫恒","fatherId":"P091","fatherName":"卫瓘","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C007","childId":"P052","childName":"卫宣","fatherId":"P091","fatherName":"卫瓘","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"4"},{"id":"C008","childId":"P094","childName":"卫玠","fatherId":"P092","fatherName":"卫恒","motherId":"P115","motherName":"王氏（王浑女，卫恒妻）","rel":"亲生","rank":"2"},{"id":"C009","childId":"P051","childName":"繁昌公主","fatherId":"P035","fatherName":"司马炎","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":""},{"id":"C010","childId":"P053","childName":"常山公主","fatherId":"P001","fatherName":"司马昭","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":""},{"id":"C011","childId":"P054","childName":"王济","fatherId":"P113","fatherName":"王浑","motherId":"P114","motherName":"钟琰","rel":"亲生","rank":"2"},{"id":"C012","childId":"P074","childName":"贾南风","fatherId":"P071","fatherName":"贾充","motherId":"P109","motherName":"郭槐","rel":"亲生","rank":"3"},{"id":"C013","childId":"P075","childName":"贾午","fatherId":"P071","fatherName":"贾充","motherId":"P109","motherName":"郭槐","rel":"亲生","rank":"4"},{"id":"C014","childId":"P073","childName":"贾荃","fatherId":"P071","fatherName":"贾充","motherId":"P072","motherName":"李婉","rel":"亲生","rank":"1"},{"id":"C015","childId":"P077","childName":"贾黎民","fatherId":"P071","fatherName":"贾充","motherId":"P109","motherName":"郭槐","rel":"亲生","rank":""},{"id":"C016","childId":"P078","childName":"贾谧","fatherId":"P076","fatherName":"韩寿","motherId":"P075","motherName":"贾午","rel":"亲生","rank":""},{"id":"C017","childId":"P078","childName":"贾谧","fatherId":"P077","fatherName":"贾黎民","motherId":"-","motherName":"-","rel":"过继入","rank":""},{"id":"C018","childId":"P109","childName":"郭槐","fatherId":"P101","fatherName":"郭配","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C019","childId":"P103","childName":"郭展","fatherId":"P101","fatherName":"郭配","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C020","childId":"P104","childName":"郭豫","fatherId":"P101","fatherName":"郭配","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C021","childId":"P110","childName":"郭氏（郭配女，裴秀妻）","fatherId":"P101","fatherName":"郭配","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C022","childId":"P111","childName":"郭氏（郭豫女，王衍妻）","fatherId":"P104","fatherName":"郭豫","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C023","childId":"P105","childName":"郭奕","fatherId":"P102","fatherName":"郭镇","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C024","childId":"P106","childName":"郭氏（郭镇女，刘蕃妻）","fatherId":"P102","fatherName":"郭镇","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C025","childId":"P107","childName":"刘舆","fatherId":"-","fatherName":"刘蕃","motherId":"P106","motherName":"郭氏（郭镇女，刘蕃妻）","rel":"亲生","rank":""},{"id":"C026","childId":"P108","childName":"刘琨","fatherId":"-","fatherName":"刘蕃","motherId":"P106","motherName":"郭氏（郭镇女，刘蕃妻）","rel":"亲生","rank":""},{"id":"C027","childId":"P088","childName":"裴頠","fatherId":"P082","fatherName":"裴秀","motherId":"P110","motherName":"郭氏（郭配女，裴秀妻）","rel":"亲生","rank":"2"},{"id":"C028","childId":"P128","childName":"王氏（王戎女，裴頠妻）","fatherId":"P127","fatherName":"王戎","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"1"},{"id":"C029","childId":"P083","childName":"裴楷","fatherId":"P081","fatherName":"裴徽","motherId":"-","motherName":"","rel":"亲生","rank":"3"},{"id":"C030","childId":"P122","childName":"荀氏（荀勖女，司马晏妃）","fatherId":"P119","fatherName":"荀勖","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C031","childId":"P120","childName":"荀藩","fatherId":"P119","fatherName":"荀勖","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C032","childId":"P121","childName":"荀组","fatherId":"P119","fatherName":"荀勖","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C033","childId":"P098","childName":"山简","fatherId":"P099","fatherName":"山涛","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"5"},{"id":"C034","childId":"P055","childName":"襄城公主","fatherId":"P035","fatherName":"司马炎","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":""},{"id":"C035","childId":"P095","childName":"乐氏（乐广女，卫玠妻）","fatherId":"P097","fatherName":"乐广","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C036","childId":"P046","childName":"乐氏（乐广女，司马颖妃）","fatherId":"P097","fatherName":"乐广","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C037","childId":"P096","childName":"山氏（山简女，卫玠继室）","fatherId":"P098","fatherName":"山简","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C038","childId":"P047","childName":"司马冏","fatherId":"P036","fatherName":"司马攸","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":"3或4"},{"id":"C039","childId":"P048","childName":"司马蕤","fatherId":"P036","fatherName":"司马攸","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":"1"},{"id":"C040","childId":"P049","childName":"司马寔","fatherId":"P036","fatherName":"司马攸","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":"2"},{"id":"C041","childId":"P039","childName":"司马柬","fatherId":"P035","fatherName":"司马炎","motherId":"P069","motherName":"杨艳","rel":"亲生","rank":"3"},{"id":"C042","childId":"P040","childName":"司马乂","fatherId":"P035","fatherName":"司马炎","motherId":"-","motherName":"审美人","rel":"亲生","rank":"<司马玮"},{"id":"C043","childId":"P041","childName":"司马玮","fatherId":"P035","fatherName":"司马炎","motherId":"-","motherName":"审美人","rel":"亲生","rank":">司马乂"},{"id":"C044","childId":"P042","childName":"司马允","fatherId":"P035","fatherName":"司马炎","motherId":"-","motherName":"李夫人","rel":"亲生","rank":">司马晏"},{"id":"C045","childId":"P043","childName":"司马晏","fatherId":"P035","fatherName":"司马炎","motherId":"-","motherName":"李夫人","rel":"亲生","rank":"<司马允"},{"id":"C046","childId":"P044","childName":"司马炽","fatherId":"P035","fatherName":"司马炎","motherId":"-","motherName":"王媛姬","rel":"亲生","rank":""},{"id":"C047","childId":"P050","childName":"司马邺","fatherId":"P043","fatherName":"司马晏","motherId":"P122","motherName":"荀氏（荀勖女，司马晏妃）","rel":"亲生","rank":""},{"id":"C048","childId":"P050","childName":"司马邺","fatherId":"P039","fatherName":"司马柬","motherId":"-","motherName":"（不详）","rel":"过继入","rank":""},{"id":"C049","childId":"P057","childName":"颍川公主","fatherId":"P035","fatherName":"司马炎","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":""},{"id":"C050","childId":"P061","childName":"荥阳公主","fatherId":"P035","fatherName":"司马炎","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":""},{"id":"C051","childId":"P063","childName":"武安公主","fatherId":"P035","fatherName":"司马炎","motherId":"-","motherName":"胡芳","rel":"亲生","rank":""},{"id":"C052","childId":"P082","childName":"裴秀","fatherId":"P080","fatherName":"裴潜","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":""},{"id":"C053","childId":"P090","childName":"裴舆","fatherId":"P083","fatherName":"裴楷","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"1"},{"id":"C054","childId":"P089","childName":"裴瓒","fatherId":"P083","fatherName":"裴楷","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"2"},{"id":"C055","childId":"P084","childName":"裴宪","fatherId":"P083","fatherName":"裴楷","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"3"},{"id":"C056","childId":"P066","childName":"杨氏（杨骏女，裴瓒妻）","fatherId":"P065","fatherName":"杨骏","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"2"},{"id":"C057","childId":"P116","childName":"王氏（王浑女，和峤妻）","fatherId":"P113","fatherName":"王浑","motherId":"-","motherName":"（不详）","rel":"亲生","rank":">王济"},{"id":"C058","childId":"P118","childName":"王氏（王浑女，裴楷妻）","fatherId":"P113","fatherName":"王浑","motherId":"-","motherName":"（不详）","rel":"亲生","rank":">王济"},{"id":"C059","childId":"P093","childName":"卫岳","fatherId":"P091","fatherName":"卫瓘","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"3"},{"id":"C060","childId":"P087","childName":"裴氏（裴楷女，卫岳妻）","fatherId":"P083","fatherName":"裴楷","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C061","childId":"P045","childName":"司马颖","fatherId":"P035","fatherName":"司马炎","motherId":"-","motherName":"程才人","rel":"亲生","rank":""},{"id":"C062","childId":"P038","childName":"司马遹","fatherId":"P037","fatherName":"司马衷","motherId":"-","motherName":"谢玖","rel":"亲生","rank":"1"},{"id":"C063","childId":"P059","childName":"王畅","fatherId":"P058","fatherName":"王濬","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C064","childId":"P060","childName":"王粹","fatherId":"P059","fatherName":"王畅","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C065","childId":"P124","childName":"王惠风","fatherId":"P123","fatherName":"王衍","motherId":"P111","motherName":"郭氏（郭豫女，王衍妻）","rel":"亲生","rank":""},{"id":"C066","childId":"P125","childName":"王景风","fatherId":"P123","fatherName":"王衍","motherId":"P111","motherName":"郭氏（郭豫女，王衍妻）","rel":"亲生","rank":"1"},{"id":"C067","childId":"P126","childName":"王氏（王衍女，裴遐妻）","fatherId":"P123","fatherName":"王衍","motherId":"P111","motherName":"郭氏（郭豫女，王衍妻）","rel":"亲生","rank":"4"},{"id":"C068","childId":"P085","childName":"裴绰","fatherId":"P081","fatherName":"裴徽","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"4"},{"id":"C069","childId":"P086","childName":"裴遐","fatherId":"P085","fatherName":"裴绰","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C070","childId":"P115","childName":"王氏（王浑女，卫恒妻）","fatherId":"P113","fatherName":"王浑","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C071","childId":"P004","childName":"羊徽瑜","fatherId":"P005","fatherName":"羊衜","motherId":"-","motherName":"孔氏（孔融女）","rel":"亲生","rank":">羊祜"},{"id":"C072","childId":"P007","childName":"羊祜","fatherId":"P005","fatherName":"羊衜","motherId":"-","motherName":"蔡氏","rel":"亲生","rank":""},{"id":"C073","childId":"P009","childName":"羊瑾","fatherId":"P006","fatherName":"羊耽","motherId":"-","motherName":"辛宪英","rel":"亲生","rank":">羊琇"},{"id":"C074","childId":"P010","childName":"羊琇","fatherId":"P006","fatherName":"羊耽","motherId":"-","motherName":"辛宪英","rel":"亲生","rank":""},{"id":"C075","childId":"P025","childName":"羊氏（羊耽女，夏侯庄妻）","fatherId":"P006","fatherName":"羊耽","motherId":"-","motherName":"辛宪英","rel":"亲生","rank":""},{"id":"C076","childId":"P011","childName":"羊玄之","fatherId":"P009","fatherName":"羊瑾","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C077","childId":"P012","childName":"羊献容","fatherId":"P011","fatherName":"羊玄之","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C078","childId":"P014","childName":"司马氏（司马亮女，裴舆妻）","fatherId":"P013","fatherName":"司马亮","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C079","childId":"P015","childName":"司马氏（司马亮女，夏侯骏妻）","fatherId":"P013","fatherName":"司马亮","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C080","childId":"P018","childName":"司马觐","fatherId":"P016","fatherName":"司马伷","motherId":"P017","motherName":"诸葛太妃","rel":"亲生","rank":"1"},{"id":"C081","childId":"P020","childName":"司马睿","fatherId":"P018","fatherName":"司马觐","motherId":"P019","motherName":"夏侯光姬","rel":"亲生","rank":"1"},{"id":"C082","childId":"P023","childName":"夏侯骏","fatherId":"P022","fatherName":"夏侯威","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"1"},{"id":"C083","childId":"P024","childName":"夏侯庄","fatherId":"P022","fatherName":"夏侯威","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"2"},{"id":"C084","childId":"P026","childName":"夏侯湛","fatherId":"P024","fatherName":"夏侯庄","motherId":"-","motherName":"（不详）","rel":"亲生","rank":">夏侯光姬"},{"id":"C085","childId":"P019","childName":"夏侯光姬","fatherId":"P024","fatherName":"夏侯庄","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C086","childId":"P027","childName":"夏侯氏（夏侯庄女，王正妻）","fatherId":"P024","fatherName":"夏侯庄","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C087","childId":"P008","childName":"夏侯氏（夏侯霸女，羊祜妻）","fatherId":"P021","fatherName":"夏侯霸","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C088","childId":"P001","childName":"司马昭","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"张春华","rel":"亲生","rank":"<司马师"},{"id":"C089","childId":"P003","childName":"司马师","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"张春华","rel":"亲生","rank":""},{"id":"C090","childId":"P031","childName":"司马干","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"张春华","rel":"亲生","rank":"<司马昭"},{"id":"C091","childId":"P013","childName":"司马亮","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"伏夫人","rel":"亲生","rank":"3"},{"id":"C092","childId":"P016","childName":"司马伷","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"伏夫人","rel":"亲生","rank":"<司马亮"},{"id":"C093","childId":"P032","childName":"司马骏","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"伏夫人","rel":"亲生","rank":"<司马伷"},{"id":"C094","childId":"P033","childName":"司马肜","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"张夫人","rel":"亲生","rank":"8"},{"id":"C095","childId":"P034","childName":"司马伦","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"柏夫人","rel":"亲生","rank":"9"},{"id":"C096","childId":"P028","childName":"司马澹","fatherId":"P016","fatherName":"司马伷","motherId":"P017","motherName":"诸葛太妃","rel":"亲生","rank":"2"},{"id":"C097","childId":"P030","childName":"司马繇","fatherId":"P016","fatherName":"司马伷","motherId":"P017","motherName":"诸葛太妃","rel":"亲生","rank":"3"}],"families":[{"name":"河内司马氏","hex":"#C00000","text":"#FFFFFF"},{"name":"弘农杨氏","hex":"#FAAC90","text":"#000000"},{"name":"平阳贾氏","hex":"#C9A4E4","text":"#000000"},{"name":"河东裴氏","hex":"#A3DBF7","text":"#000000"},{"name":"河东卫氏","hex":"#99FFCC","text":"#000000"},{"name":"太原郭氏","hex":"#FFBC01","text":"#000000"},{"name":"太原王氏","hex":"#FF9900","text":"#000000"},{"name":"颍川荀氏","hex":"#BBC0FB","text":"#000000"},{"name":"泰山羊氏","hex":"#FFFFCC","text":"#000000"},{"name":"东海王氏","hex":"#E0FFCD","text":"#000000"},{"name":"琅琊王氏","hex":"#C4D79B","text":"#000000"}]};</script>
+<script>window.PEDIGREE_DATA = {"persons":[{"id":"P001","name":"司马昭","zi":"字子上，谥文帝","gender":"男","family":"河内司马氏","birth":"211","death":"265","note":"权臣，晋朝奠基者，司马炎、司马攸之父"},{"id":"P002","name":"王元姬","zi":"谥文明皇后","gender":"女","family":"东海王氏","birth":"217","death":"268","note":"司马昭正妻，经学家王肃之女；"},{"id":"P003","name":"司马师","zi":"字子元，谥景帝","gender":"男","family":"河内司马氏","birth":"208","death":"255","note":"司马昭之兄，无子，以弟司马昭次子攸为嗣；原配夏侯徽本表未收录"},{"id":"P004","name":"羊徽瑜","zi":"谥景献皇后","gender":"女","family":"泰山羊氏","birth":"214","death":"278","note":"司马师续娶之妻，羊祜之姊"},{"id":"P005","name":"羊衜","zi":"","gender":"男","family":"泰山羊氏","birth":"","death":"","note":"羊续子，上党太守，羊祜、羊徽瑜之父。《晋书》卷34《羊祜传》"},{"id":"P006","name":"羊耽","zi":"","gender":"男","family":"泰山羊氏","birth":"","death":"","note":"羊衜弟，太常，辛宪英夫。《晋书》卷34《羊祜传》"},{"id":"P007","name":"羊祜","zi":"字叔子","gender":"男","family":"泰山羊氏","birth":"221","death":"278","note":"《晋书》卷34《羊祜传》：泰始八年卒，时年五十八"},{"id":"P008","name":"夏侯氏（夏侯霸女，羊祜妻）","zi":"夏侯霸女，羊祜妻","gender":"女","family":"-","birth":"","death":"","note":"夏侯霸之女。见《三国志·夏侯渊传》注"},{"id":"P009","name":"羊瑾","zi":"","gender":"男","family":"泰山羊氏","birth":"","death":"","note":"羊耽长子，尚书右仆射。《晋书》卷93《外戚传》"},{"id":"P010","name":"羊琇","zi":"字稚舒","gender":"男","family":"泰山羊氏","birth":"236","death":"282","note":"《晋书》卷93《外戚传》"},{"id":"P011","name":"羊玄之","zi":"字宏献","gender":"男","family":"泰山羊氏","birth":"","death":"303","note":"羊瑾子，羊献容父。《晋书》卷93《外戚传》"},{"id":"P012","name":"羊献容","zi":"惠皇后，前赵献文皇后","gender":"女","family":"泰山羊氏","birth":"","death":"322","note":"晋惠帝第二任皇后，后为刘曜皇后。《晋书》卷31《后妃传》"},{"id":"P013","name":"王恂","zi":"字良夫","gender":"男","family":"东海王氏","birth":"","death":"278","note":"王元姬之弟。晉書/卷093外戚傳：咸寧四年卒，贈車騎將軍。"},{"id":"P014","name":"王恺","zi":"字君夫","gender":"男","family":"东海王氏","birth":"","death":"","note":"晉書/卷093外戚傳"},{"id":"P015","name":"伏夫人","zi":"","gender":"女","family":"-","birth":"","death":"","note":"宣帝司马懿妾室，生亮、伷、京（早逝）、骏"},{"id":"P016","name":"司马亮","zi":"字子翼，汝南王，谥文成","gender":"男","family":"河内司马氏","birth":"","death":"291","note":"宣帝第四子，伏夫人所生。《晋书》卷59《汝南王亮传》"},{"id":"P017","name":"司马氏（司马亮女，裴舆妻）","zi":"司马亮女，裴舆妻","gender":"女","family":"河内司马氏","birth":"","death":"","note":"司马亮之女"},{"id":"P018","name":"司马氏（司马亮女，夏侯骏妻）","zi":"司马亮女，夏侯骏妻","gender":"女","family":"河内司马氏","birth":"","death":"","note":"司马亮之女"},{"id":"P019","name":"司马伷","zi":"字子将，琅邪王，谥武","gender":"男","family":"河内司马氏","birth":"227","death":"283","note":"宣帝第五子，伏夫人所生。《晋书》卷38《琅邪王伷传》：太康四年薨，时年五十七"},{"id":"P020","name":"诸葛太妃","zi":"诸葛诞之女","gender":"女","family":"-","birth":"","death":"","note":"司马伷妃，诸葛诞之女，司马觐、司马澹、司马繇、司马漼之母。《晋书》卷38：澹母诸葛太妃；繇外祖诸葛诞"},{"id":"P021","name":"司马觐","zi":"字思祖，琅邪王，谥恭","gender":"男","family":"河内司马氏","birth":"256","death":"290","note":"司马伷长子。《晋书》卷38：太熙元年薨，时年三十五"},{"id":"P022","name":"夏侯光姬","zi":"小字铜环","gender":"女","family":"-","birth":"","death":"307","note":"夏侯庄女，司马觐妃，生司马睿。《晋书》卷31《后妃传》"},{"id":"P023","name":"司马睿","zi":"字景文，谥元皇帝","gender":"男","family":"河内司马氏","birth":"276","death":"323","note":"东晋元帝。《晋书》卷6《元帝纪》"},{"id":"P024","name":"夏侯霸","zi":"字仲权","gender":"男","family":"-","birth":"","death":"","note":"（由于行政区划调整，这里不填了）"},{"id":"P025","name":"夏侯威","zi":"字季权","gender":"男","family":"-","birth":"","death":"","note":"《三国志·魏书·夏侯渊传》注引《世语》：历荆、兖二州刺史"},{"id":"P026","name":"夏侯骏","zi":"字长容","gender":"男","family":"-","birth":"","death":"","note":"夏侯威长子，并州刺史。见《三国志·夏侯渊传》注"},{"id":"P027","name":"夏侯庄","zi":"字仲容","gender":"男","family":"-","birth":"","death":"","note":"夏侯威次子，淮南太守。《晋书》卷55《夏侯湛传》"},{"id":"P028","name":"羊氏（羊耽女，夏侯庄妻）","zi":"羊耽女，夏侯庄妻","gender":"女","family":"泰山羊氏","birth":"","death":"","note":"羊耽与辛宪英之女"},{"id":"P029","name":"夏侯湛","zi":"字孝若","gender":"男","family":"-","birth":"243","death":"291","note":"《晋书》卷55《夏侯湛传》；潘岳《夏侯常侍诔》：元康元年夏五月卒，春秋四十九"},{"id":"P030","name":"夏侯氏（夏侯庄女，王正妻）","zi":"夏侯庄女，王正妻","gender":"女","family":"-","birth":"","death":"","note":"夏侯庄次女，王正妻，王羲之祖母"},{"id":"P031","name":"司马澹","zi":"字思弘，武陵王，谥庄","gender":"男","family":"河内司马氏","birth":"","death":"","note":"司马伷次子。《晋书》卷38·武陵庄王澹传"},{"id":"P032","name":"郭氏（司马澹妻）","zi":"贾后表妹，武陵王澹妻","gender":"女","family":"太原郭氏","birth":"","death":"","note":"司马澹妻，贾后内妹。《晋书》卷38：澹妻郭氏，贾后内妹也"},{"id":"P033","name":"司马繇","zi":"字思玄，东安王","gender":"男","family":"河内司马氏","birth":"","death":"","note":"司马伷子。《晋书》卷38·东安王繇传"},{"id":"P034","name":"司马干","zi":"字子良，平原王","gender":"男","family":"河内司马氏","birth":"","death":"","note":"宣帝司马懿子，张皇后生。《晋书》卷38·平原王幹传：永嘉五年薨，时年八十"},{"id":"P035","name":"司马骏","zi":"字子臧，扶风王，谥武","gender":"男","family":"河内司马氏","birth":"","death":"","note":"宣帝司马懿子，伏夫人生。《晋书》卷38·扶风王骏传"},{"id":"P036","name":"司马肜","zi":"字子徽，梁王，谥孝","gender":"男","family":"河内司马氏","birth":"","death":"","note":"宣帝司马懿子，张夫人生。《晋书》卷38·梁王肜传"},{"id":"P037","name":"司马伦","zi":"字子彝，赵王","gender":"男","family":"河内司马氏","birth":"","death":"","note":"宣帝司马懿子，柏夫人生。《晋书》卷59·赵王伦传"},{"id":"P038","name":"司马荂","zi":"赵王世子","gender":"男","family":"河内司马氏","birth":"","death":"","note":"以其世子散騎常侍荂領冗從僕射。《晋书》卷59·赵王伦传"},{"id":"P039","name":"刘氏（刘舆刘琨姊妹，司马荂妻）","zi":"刘舆刘琨姊妹，司马荂妻","gender":"女","family":"-","birth":"","death":"","note":"刘琨之姊，刘舆之妹。晋书刘琨传：倫子荂，即琨姊婿也；刘舆传：妹適倫世子荂，荂與秀不協，復以輿爲散騎侍郎。"},{"id":"P040","name":"司马炎","zi":"字安世，谥武帝","gender":"男","family":"河内司马氏","birth":"236","death":"290","note":"司马昭长子，西晋开国皇帝"},{"id":"P041","name":"司马攸","zi":"字大猷，齐王，谥献","gender":"男","family":"河内司马氏","birth":"248","death":"283","note":"司马昭次子，过继给伯父司马师为嗣；尚贾充与李婉之女贾荃（一名褒）为妃（《晋书》卷40·贾充传）"},{"id":"P042","name":"京兆公主","zi":"后改封长广公主","gender":"女","family":"河内司马氏","birth":"","death":"","note":"司马炎之姊，司马昭和王元姬之女。后妃传上，文明王皇后传：生武帝及遼東悼王定國、齊獻王攸、城陽哀王兆、廣漢殤王廣德、京兆公主。三国志·文昭甄皇后传注：司马景王辅政，以女妻惪。妻早亡，文王复以女继室，即京兆长公主。…… 惪为人贞素，加以世祖姊夫，是以遂贵当世。"},{"id":"P043","name":"甄德","zi":"字彦孙","gender":"男","family":"","birth":"","death":"","note":"魏明元郭皇后之从弟，京兆公主之夫。晋书王济传：濟既陳請，又累使公主與甄德妻長廣公主俱入。三国志·文昭甄皇后传：以夫人郭氏从弟惪为之后，承甄氏姓"},{"id":"P044","name":"司马衷","zi":"字正度，谥孝惠帝","gender":"男","family":"河内司马氏","birth":"259","death":"307","note":"司马炎与杨艳之子"},{"id":"P045","name":"司马遹","zi":"字熙祖，小字沙门，谥愍怀太子","gender":"男","family":"河内司马氏","birth":"278","death":"300","note":"愍怀太子，晋惠帝司马衷长子，母谢玖（武帝才人，惠帝即位拜淑媛）；幼而聪慧，武帝钟爱；太熙元年（290年）立为皇太子；元康九年（299年）贾后废为庶人，幽于金墉，永康元年（300年）为贾后所害，追谥愍怀；太子妃王惠风（《晋书》卷53·愍怀太子传）"},{"id":"P046","name":"司马柬","zi":"字弘度，秦王，谥献","gender":"男","family":"河内司马氏","birth":"","death":"","note":"武帝与杨艳之子，武帝第三子"},{"id":"P047","name":"司马乂","zi":"字士度，长沙王，谥厉","gender":"男","family":"河内司马氏","birth":"","death":"","note":"武帝子，司马玮同母弟，母审美人"},{"id":"P048","name":"司马玮","zi":"字彦度，楚王，谥隐","gender":"男","family":"河内司马氏","birth":"","death":"","note":"武帝子，司马乂同母兄，母审美人"},{"id":"P049","name":"司马允","zi":"字钦度，淮南王，谥忠壮","gender":"男","family":"河内司马氏","birth":"","death":"","note":"武帝子，司马晏同母兄，母李夫人"},{"id":"P050","name":"司马晏","zi":"字平度，吴王","gender":"男","family":"河内司马氏","birth":"","death":"","note":"淮南王允同母弟，母李夫人"},{"id":"P051","name":"司马炽","zi":"字丰度，原豫章王，谥孝怀帝","gender":"男","family":"河内司马氏","birth":"","death":"","note":"武帝子"},{"id":"P052","name":"司马颖","zi":"字章度，成都王，无谥号","gender":"男","family":"河内司马氏","birth":"","death":"","note":""},{"id":"P053","name":"乐氏（乐广女，司马颖妃）","zi":"乐广女，司马颖妃","gender":"女","family":"-","birth":"","death":"","note":""},{"id":"P054","name":"司马冏","zi":"字景治，齐王，谥武闵","gender":"男","family":"河内司马氏","birth":"","death":"303","note":"司马攸庶子，第三子或第四子，八王之乱参与者"},{"id":"P055","name":"司马蕤","zi":"字景回","gender":"男","family":"河内司马氏","birth":"","death":"301","note":"司马冏之兄，司马攸庶长子；司马攸传：三子：蕤、贊、寔。晋书校勘记：據下廣德傳謂贊為第五子，寔為第二子。遼東悼惠王定國传：齊王攸以長子蕤為嗣。"},{"id":"P056","name":"司马寔","zi":"字景深","gender":"男","family":"河内司马氏","birth":"","death":"","note":"司马蕤之弟，司马攸次子（晋书校勘记）"},{"id":"P057","name":"司马邺","zi":"字彦旗，谥孝愍帝","gender":"男","family":"河内司马氏","birth":"","death":"","note":"司马晏之子，过继给司马柬"},{"id":"P058","name":"繁昌公主","zi":"","gender":"女","family":"河内司马氏","birth":"","death":"","note":"武帝之女，下嫁卫瓘第四子卫宣（《晋书》卷36·卫瓘传）"},{"id":"P059","name":"卫宣","zi":"","gender":"男","family":"河东卫氏","birth":"","death":"","note":"娶公主；卫瓘第四子，尚武帝女繁昌公主，后有酒色之过，杨骏欲使帝夺婚未成而宣病亡（《晋书》卷36·卫瓘传）"},{"id":"P060","name":"常山公主","zi":"","gender":"女","family":"河内司马氏","birth":"","death":"","note":"各说不一，暂且认为是武帝妹妹，即司马昭庶女，生母不明；《晋书》卷42·王浑传附王济传明确记载\"尚常山公主\"，即王济之妻"},{"id":"P061","name":"王济","zi":"字武子","gender":"男","family":"太原王氏","birth":"","death":"","note":"字武子，王浑次子，尚常山公主，累迁侍中，与姊夫和峤、裴楷齐名，性豪侈；终无子，唯有庶子二人（卓、聿）；年四十六，先浑卒，具体纪年原文未载，追赠骠骑将军（《晋书》卷42·王浑传附王济传）"},{"id":"P062","name":"襄城公主","zi":"字脩袆","gender":"女","family":"河内司马氏","birth":"","death":"","note":"武帝之女，嫁王敦"},{"id":"P063","name":"王敦","zi":"字处仲","gender":"男","family":"琅琊王氏","birth":"","death":"","note":""},{"id":"P064","name":"颍川公主","zi":"","gender":"女","family":"河内司马氏","birth":"","death":"","note":"武帝女，嫁王粹"},{"id":"P065","name":"王濬","zi":"","gender":"男","family":"-","birth":"","death":"","note":""},{"id":"P066","name":"王畅","zi":"","gender":"男","family":"-","birth":"","death":"","note":"王濬子，非长子"},{"id":"P067","name":"王粹","zi":"","gender":"男","family":"-","birth":"","death":"","note":"王畅子，二十四友之一，后在成都王麾下"},{"id":"P068","name":"荥阳公主","zi":"","gender":"女","family":"河内司马氏","birth":"","death":"","note":"武帝女，嫁华恒"},{"id":"P069","name":"华恒","zi":"字敬则","gender":"男","family":"-","birth":"","death":"","note":"华廙之子"},{"id":"P070","name":"武安公主","zi":"","gender":"女","family":"河内司马氏","birth":"","death":"","note":"武帝与胡芳女，嫁温羡"},{"id":"P071","name":"温羡","zi":"","gender":"男","family":"-","birth":"","death":"","note":""},{"id":"P072","name":"杨炳","zi":"字文宗","gender":"男","family":"弘农杨氏","birth":"","death":"","note":"杨艳之父，杨骏之兄；（晋书后妃上：臨終，枕帝膝曰：「叔父駿女男胤有德色，願陛下以備六宮。」；「父文宗」校文：御覽一三八引云后父炳，此作「文宗」者，疑以字行。湯球王隱晉書輯本注云，唐諱「炳」，故所修書作「文宗」。"},{"id":"P073","name":"赵氏（杨艳母）","zi":"","gender":"女","family":"-","birth":"","death":"","note":"杨艳之母，天水人；晋书后妃传：母天水趙氏，早卒。"},{"id":"P074","name":"杨骏","zi":"字文长","gender":"男","family":"弘农杨氏","birth":"","death":"291","note":"杨芷之父，后父居重位；惠帝即位为辅政，贾后令孟观、李肇构之，元康元年（291年）废骏，骏逃于马厩被戟杀，亲党皆夷三族（《晋书》卷40·杨骏传）"},{"id":"P075","name":"杨氏（杨骏女，裴瓒妻）","zi":"杨骏女，裴瓒妻","gender":"女","family":"弘农杨氏","birth":"","death":"","note":"杨骏之女，裴楷次子裴瓒之妻；“楷子瓒娶杨骏女”，名未载（《晋书》卷35·裴秀传）"},{"id":"P076","name":"杨珧","zi":"字文琚","gender":"男","family":"弘农杨氏","birth":"","death":"291","note":"杨骏之弟；字文琚，历位尚书令、卫将军；与骏同被诛（元康元年/291年），临刑称冤（《晋书》卷40·杨骏传）"},{"id":"P077","name":"杨济","zi":"字文通","gender":"男","family":"弘农杨氏","birth":"","death":"291","note":"杨珧之弟；字文通，历位镇南、征北将军，迁太子太傅；与诸兄俱见害（元康元年/291年）（《晋书》卷40·杨骏传）"},{"id":"P078","name":"杨艳","zi":"字琼芝，谥武元皇后","gender":"女","family":"弘农杨氏","birth":"238","death":"274","note":"司马炎原配皇后，司马衷生母"},{"id":"P079","name":"杨芷","zi":"字季兰，谥武悼皇后","gender":"女","family":"弘农杨氏","birth":"259","death":"292","note":"司马炎继立皇后，杨骏之女"},{"id":"P080","name":"赵虞","zi":"","gender":"男","family":"-","birth":"","death":"","note":"杨艳舅舅，赵粲之父"},{"id":"P081","name":"赵俊","zi":"晋书卷59作赵浚","gender":"男","family":"-","birth":"","death":"","note":"杨艳舅舅，曾抚养杨艳，赵粲叔父；晋书后妃传：后追懷舅氏之恩，顯官趙俊，納俊兄虞女粲於後宮為夫人。"},{"id":"P082","name":"赵粲","zi":"武帝充华","gender":"女","family":"-","birth":"","death":"","note":"杨艳表姐妹，曾在贾南风杀人一事中救贾南风：《晋书·后妃上》：充華趙粲從容言曰：「賈妃年少，妒是婦人之情耳，長自當差。願陛下察之。」"},{"id":"P083","name":"胡芳","zi":"武帝贵嫔","gender":"女","family":"","birth":"","death":"","note":""},{"id":"P084","name":"王媛姬","zi":"武帝中才人","gender":"女","family":"","birth":"","death":"","note":""},{"id":"P085","name":"贾充","zi":"字公闾","gender":"男","family":"平阳贾氏","birth":"217","death":"282","note":"西晋开国功臣，定律令；父贾逵，魏豫州刺史、阳里亭侯；历官至司空、太尉、录尚书事，封鲁郡公；太康三年（282年）四月薨，时年六十六，赠太宰，谥曰武（《晋书》卷40·贾充传）"},{"id":"P086","name":"李婉","zi":"字淑文","gender":"女","family":"-","birth":"","death":"","note":"（ 《世说新语・贤媛篇》刘孝标注引《妇人集》曰：“充妻李氏，名婉，字淑文。”）贾充原配，父李丰因政治事件被诛后受牵连离异；字号不详，生贾充二女：褒（一名荃）、裕（一名浚，本表未收录）；父李丰诛后坐流徙离异；武帝践阼后大赦得还，帝特诏充可置左右夫人，充母亦敕充迎李氏，然郭槐怒阻，充未敢迎，为其筑室于永年里而不往来；及郭槐薨、贾后废后，方得与贾充合葬；撰有《女训》行于世（《晋书》卷40·贾充传）"},{"id":"P087","name":"贾荃","zi":"一名贾褒","gender":"女","family":"平阳贾氏","birth":"","death":"","note":"贾充与李婉之女，司马攸（齐王，司马冏之父）之妃；“荃恚愤而薨”（《晋书》卷40·贾充传）"},{"id":"P088","name":"贾南风","zi":"","gender":"女","family":"平阳贾氏","birth":"257","death":"300","note":"贾充与郭槐之女，晋惠帝皇后，八王之乱关键人物；本卷载其专擅朝政，加充庙备六佾之乐；赵王伦废后，贾后服金酒而死（《晋书》卷40·贾充传）"},{"id":"P089","name":"贾午","zi":"","gender":"女","family":"平阳贾氏","birth":"","death":"","note":"贾充与郭槐之女（充少女，即幼女）；与韩寿私通，充察觉后正式以女妻寿，生贾谧；赵王伦废后事发，午亦伏诛（考竟用大杖）（《晋书》卷40·贾充传）"},{"id":"P090","name":"韩寿","zi":"字德真","gender":"男","family":"-","birth":"","death":"","note":"魏司徒韩暨曾孙，美姿仪；为贾充掾属，与贾午私通，充知情后以女正式妻之；官至散骑常侍、河南尹，元康初（约291年前后）卒，赠骠骑将军；赵王伦败后，寿诸弟及子侄多人因谧事伏诛（《晋书》卷40·贾充传）"},{"id":"P091","name":"贾黎民","zi":"","gender":"男","family":"平阳贾氏","birth":"","death":"","note":"贾充与郭槐早夭之子；年三岁，乳母被郭槐鞭杀，黎民恋念发病而死；后郭槐又生一男亦因疑忌乳母被害而死，贾充遂无胤嗣（《晋书》卷40·贾充传）"},{"id":"P092","name":"贾谧","zi":"字长渊","gender":"","family":"平阳贾氏","birth":"","death":"","note":"本名韩谧，父韩寿、母贾午，因贾充绝嗣，郭槐奏立为亡子黎民之后以奉充祀，改姓贾，封鲁公世孙；为\"二十四友\"之核心召集人物，宾客辐凑；历散骑常侍、后军将军、秘书监（掌国史，主张晋书断限用泰始说）、侍中；与愍怀太子结怨并谮害之；赵王伦废贾后时，谧被诛于钟（锺）下（《晋书》卷40·贾充传）"},{"id":"P093","name":"贾模","zi":"字思范","gender":"男","family":"平阳贾氏","birth":"","death":"","note":"贾充从子（遵之弟）；豫诛杨骏，封平阳乡侯；历散骑常侍、侍中、光禄大夫；卒追赠车骑将军、开府仪同三司，谥曰成；子游字彦将嗣（《晋书》卷40·贾充传）"},{"id":"P094","name":"裴潜","zi":"字文行","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴秀之父，魏尚书令（《晋书》卷35·裴秀传），裴徽的兄弟【排行？】"},{"id":"P095","name":"裴徽","zi":"字文季","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴楷父亲，裴秀叔父"},{"id":"P096","name":"裴秀","zi":"字季彦","gender":"男","family":"河东裴氏","birth":"224","death":"271","note":"河东闻喜人，祖裴茂（汉尚书令）、父裴潜（魏尚书令）、叔父裴徽；少好学，八岁能属文；议五等爵、作《禹贡地域图》十八篇、创制朝仪；晋武帝受禅封钜鹿郡公，历尚书令、司空；泰始七年（271年）薨，时年四十八；二子浚、頠（《晋书》卷35·裴秀传）；妻郭配女（《三国志·郭淮传》注引《晋诸公赞》）"},{"id":"P097","name":"裴楷","zi":"字叔则","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴秀从弟，父裴徽（魏冀州刺史）；明悟有识量，尤精《老》《易》，少与王戎齐名，时人谓之“玉人”；历吏部郎、侍中、中书令、光禄大夫；五子舆、瓒、宪、礼、逊；与杨骏为儿女亲家（楷子瓒娶杨骏女），是王浑之婿（楷妻为王浑女）、王济之姐夫，长子舆娶司马亮女，女适卫瓘子（《晋书》卷35·裴秀传）"},{"id":"P098","name":"裴宪","zi":"字景思","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴楷子。《晋书》卷35《裴秀传》附"},{"id":"P099","name":"裴绰","zi":"字季舒","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴徽幼子（徽少子），裴楷之弟（“楷弟绰”）；器宇宏旷，官至黄门侍郎、长水校尉，时人比之王澄；子裴遐；排行第四（长兄裴黎、次兄裴康、兄裴楷）（《晋书》卷35·裴秀传）"},{"id":"P100","name":"裴遐","zi":"字叔道","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴徽之孙、裴绰之子、裴楷之侄；《晋书》卷35·裴秀传“绰子遐，善言玄理，音辞清畅，泠然若琴瑟”；少有理称，辟司空掾、散骑郎；娶太尉王衍第四女（《世说新语·文学》注引《晋诸公赞》作“父纬，长水校尉”，疑“纬”为“绰”之误）"},{"id":"P101","name":"裴氏（裴楷女，卫岳妻）","zi":"裴楷女，卫岳妻","gender":"女","family":"河东裴氏","birth":"","death":"","note":"裴楷之女，母王浑女（王氏·裴楷妻）；嫁卫瓘子卫岳；《晋书》卷35·裴秀传“女适卫瓘子”；卫氏家谱称卫瓘三子卫岳娶裴楷女，晋书本传未明指哪位儿子"},{"id":"P102","name":"裴頠","zi":"字逸民","gender":"男","family":"河东裴氏","birth":"267","death":"300","note":"裴秀次子；兄浚早卒，贾充表“秀有佐命之勋…頠才德英茂”，诏袭钜鹿郡公爵；累迁侍中、尚书左仆射、光禄大夫；著《崇有论》《辩才论》；因谏阻赵王伦、与张华议废贾后，永康元年（300年）废贾后之际被赵王伦所诛，时年三十四；二子嵩、该（《晋书》卷35·裴秀传）"},{"id":"P103","name":"裴瓒","zi":"字国宝","gender":"男","family":"河东裴氏","birth":"","death":"291","note":"裴楷次子，字国宝，中书郎，风神高迈；娶杨骏女；杨骏之诛（291年）为乱兵所害（《晋书》卷35·裴秀传）"},{"id":"P104","name":"裴舆","zi":"字祖明","gender":"男","family":"河东裴氏","birth":"","death":"","note":"裴楷长子，字祖明，少袭父爵，官至散骑侍郎；先娶汝南王司马亮女（《晋书》卷35·裴秀传）"},{"id":"P105","name":"卫瓘","zi":"字伯玉","gender":"男","family":"河东卫氏","birth":"220","death":"291","note":"魏尚书卫觊之子；历廷尉、司空、太保等职；楚王玮矫诏被杀，时年七十二（《晋书》卷36·卫瓘传）"},{"id":"P106","name":"卫恒","zi":"字巨山","gender":"男","family":"河东卫氏","birth":"","death":"291","note":"娶王浑女，何劭是其嫂父；卫瓘之子，善草隶书，作《四体书势》；瓘被害时同罹难（《晋书》卷36·卫瓘传）"},{"id":"P107","name":"卫岳","zi":"","gender":"男","family":"河东卫氏","birth":"","death":"291","note":"卫瓘第三子；《晋书》卷36·卫瓘传“与子恒、岳、裔及孙等九人同被害”，元康元年（291年）与父同被司马玮矫诏所杀；娶河东裴氏裴楷之女（《晋书》卷35·裴秀传“女适卫瓘子”）；排行据卫氏家谱系统（书法网《卫氏渊源》：卫恒次子、卫岳三子、卫宣四子、卫庭五子；老家河南家谱馆亦载卫瓘六男、卫恒次子、卫宣四子），晋书本传未明指；生母未载"},{"id":"P108","name":"卫玠","zi":"字叔宝","gender":"男","family":"河东卫氏","birth":"286","death":"312","note":"卫恒次子，好清谈、容貌俊美；永嘉六年（312年）卒于豫章，时年二十七，虚岁推算生年（《晋书》卷36·卫玠传）"},{"id":"P109","name":"乐氏（乐广女，卫玠妻）","zi":"乐广女，卫玠妻","gender":"女","family":"-","birth":"","death":"","note":"乐广之女，卫玠原配，先玠而卒（《晋书》卷36·卫玠传）"},{"id":"P110","name":"山氏（山简女，卫玠继室）","zi":"山简女，卫玠继室","gender":"女","family":"-","birth":"","death":"","note":"山简之女，卫玠原配先亡后续娶为继室（《晋书》卷36·卫玠传）"},{"id":"P111","name":"乐广","zi":"字彦辅","gender":"男","family":"-","birth":"","death":"304","note":"卫玠和司马颖的岳父；《晋书》卷35·裴秀传：初在河南，乐广侨居郡界未知名，裴楷见而奇之，致之于宰府"},{"id":"P112","name":"山简","zi":"字季伦","gender":"男","family":"-","birth":"253","death":"312","note":"山涛第五子（晋书山涛传：有五子：該、淳、允、謨、簡。）"},{"id":"P113","name":"山涛","zi":"字巨源","gender":"男","family":"-","birth":"205","death":"283","note":""},{"id":"P114","name":"郭淮","zi":"字伯济","gender":"男","family":"太原郭氏","birth":"","death":"","note":"郭配、郭镇之兄，郭槐伯父（《三国志·郭淮传》注引《晋诸公赞》）"},{"id":"P115","name":"郭配","zi":"字仲南","gender":"男","family":"太原郭氏","birth":"","death":"","note":"郭槐的父亲，任城阳太守（《晋书》卷40·贾充传）"},{"id":"P116","name":"郭镇","zi":"字季南","gender":"男","family":"太原郭氏","birth":"","death":"","note":"郭配之弟，郭槐叔父，官谒者仆射；子奕（《晋书》作大业）（《三国志·郭淮传》注引《晋诸公赞》）"},{"id":"P117","name":"郭展","zi":"字泰舒","gender":"男","family":"太原郭氏","birth":"","death":"","note":"郭配之子，郭槐兄弟；有器度干用，历职著绩，终于太仆（《三国志·郭淮传》注引《晋诸公赞》）"},{"id":"P118","name":"郭豫","zi":"字泰宁","gender":"男","family":"太原郭氏","birth":"","death":"","note":"郭槐的兄弟，王衍的岳父。（《三国志·郭淮传》注引《晋诸公赞》）"},{"id":"P119","name":"郭奕","zi":"字泰业【晋书本传作大业】","gender":"男","family":"太原郭氏","birth":"","death":"","note":"字大业（《三国志》注引作\"弈\"，字\"泰业\"，今从《晋书》作\"奕\"\"大业\"）；郭镇之子，郭配之侄，郭槐从兄弟；山涛启事称其\"高简有雅量\"，历位雍州刺史、尚书；外甥刘舆、刘琨（《三国志·郭淮传》注引《晋诸公赞》；《晋书》卷62·刘舆传）"},{"id":"P120","name":"郭氏（郭镇女，刘蕃妻）","zi":"郭镇女，刘蕃妻","gender":"女","family":"太原郭氏","birth":"","death":"","note":"推定为郭镇之女、郭奕姊妹；据《晋书》卷62·刘舆传\"刘舆……与琨并尚书郭奕之甥\"推知其母系出郭奕一族，具体是否为郭镇亲女原文未直接明言，姑列于此供参考"},{"id":"P121","name":"刘舆","zi":"字庆孙","gender":"男","family":"-","birth":"","death":"","note":"隽朗有才局，与刘琨并为尚书郭奕之甥，名著当时；亦见于《晋书》卷40·贾谧传\"二十四友\"名单（《晋书》卷62·刘舆传）"},{"id":"P122","name":"刘琨","zi":"字越石","gender":"男","family":"-","birth":"","death":"","note":"与刘舆并为尚书郭奕之甥；亦见于《晋书》卷40·贾谧传\"二十四友\"名单（《晋书》卷62·刘舆传）"},{"id":"P123","name":"郭槐","zi":"字媛韶","gender":"女","family":"太原郭氏","birth":"237","death":"296","note":"贾充继室，贾南风生母，性妒悍；父郭配，城阳太守；性妒忌，两度因疑忌乳母而害死充二子（黎民及另一未名子），致贾充绝嗣；充薨后奏立外孙韩谧为亡子黎民后以奉充祀；初封广城君，及薨谥宣（《晋书》卷40·贾充传）；与郭氏（裴秀妻）、郭展为同产兄弟姊妹（《三国志·郭淮传》注引《晋诸公赞》）"},{"id":"P124","name":"郭氏（郭配女，裴秀妻）","zi":"郭配女，裴秀妻","gender":"女","family":"太原郭氏","birth":"","death":"","note":"郭槐的姐妹；父郭配，城阳太守（《三国志·郭淮传》注引《晋诸公赞》：\"裴秀、贾充皆配女壻\"）"},{"id":"P125","name":"郭氏（郭豫女，王衍妻）","zi":"郭豫女，王衍妻","gender":"女","family":"太原郭氏","birth":"","death":"","note":"郭豫之女，适王衍（《三国志·郭淮传》注引《晋诸公赞》：\"女适王衍\"）"},{"id":"P126","name":"郭彰","zi":"字叔武","gender":"男","family":"太原郭氏","birth":"","death":"","note":"郭槐从弟，郭槐待之如亲弟，二十四友之一，与贾谧合称“贾、郭”；贾后从舅，历散骑常侍、尚书、卫将军，封冠军县侯；贾后专朝时豫参权势；卒谥烈（《晋书》卷40·贾充传）"},{"id":"P127","name":"王浑","zi":"字玄冲","gender":"男","family":"太原王氏","birth":"223","death":"297","note":"太原晋阳人，魏司空王昶之子；历仕曹魏至西晋，官至司徒、录尚书事，封京陵侯；元康七年（297年）薨，时年七十五，虚岁推算生年，谥曰元；长子尚早亡，次子济嗣（《晋书》卷42·王浑传）"},{"id":"P128","name":"钟琰","zi":"字琰（名不详）","gender":"女","family":"-","birth":"","death":"","note":"王浑妻，生王济"},{"id":"P129","name":"王氏（王浑女，卫恒妻）","zi":"王浑女，卫恒妻","gender":"女","family":"太原王氏","birth":"","death":"","note":"王济之姊妹，据\"王济，玠之舅也\"推知为卫恒妻、卫玠生母，原文未直接明言（《晋书》卷36·卫玠传）"},{"id":"P130","name":"王氏（王浑女，和峤妻）","zi":"王浑女，和峤妻","gender":"女","family":"太原王氏","birth":"","death":"","note":"王浑之女，王济之姐，嫁和峤（汝南西平人）；《晋书》卷42·王济传“与姐夫和峤及裴楷齐名”，证和峤为王济姐夫、王氏为王济之姐；生母未载"},{"id":"P131","name":"和峤","zi":"字长舆","gender":"男","family":"-","birth":"","death":"","note":"是王济的姐夫（王济传）"},{"id":"P132","name":"王氏（王浑女，裴楷妻）","zi":"王浑女，裴楷妻","gender":"女","family":"太原王氏","birth":"","death":"","note":"王浑之女，王济之姐，嫁河东裴氏裴楷；《晋书》卷42·王济传“与姐夫和峤及裴楷齐名”；《晋书》卷35·裴秀传“匿于妻父王浑家”，楷妻为王浑女；为裴舆、裴瓒、裴氏（卫岳妻）之母；生母未载"},{"id":"P133","name":"荀勖","zi":"字公曾","gender":"男","family":"颍川荀氏","birth":"","death":"","note":""},{"id":"P134","name":"荀藩","zi":"字大坚","gender":"男","family":"颍川荀氏","birth":"","death":"","note":"荀勖之子"},{"id":"P135","name":"荀组","zi":"字大章","gender":"男","family":"颍川荀氏","birth":"","death":"","note":"荀勖之子，荀藩之弟"},{"id":"P136","name":"荀氏（荀勖女，司马晏妃）","zi":"荀勖女，司马晏妃","gender":"女","family":"颍川荀氏","birth":"","death":"","note":"荀勖之女"},{"id":"P137","name":"王浑（王戎父）","zi":"字长源","gender":"男","family":"琅琊王氏","birth":"","death":"","note":"王戎之父。《晋书·卷四十三·列传第十三》：王戎，字濬冲，琅邪临沂人也。祖雄，幽州刺史。父浑，凉州刺史、贞陵亭侯。 《世说新语注·德行第一·21》：世语曰：“浑字长源，有才望。历尚书、凉州刺史。”"},{"id":"P138","name":"王乂","zi":"字叔元","gender":"男","family":"琅琊王氏","birth":"","death":"","note":"王衍、王澄之父，王浑（王戎父）之弟。《三国志注·卷二十四·魏书二十四》：雄后为幽州刺史。子浑，凉州刺史。次乂，平北将军。司徒安丰侯戎，浑之子。太尉武陵侯衍、荆州刺史澄，皆乂之子。"},{"id":"P139","name":"羊氏（王衍母）","zi":"王衍母，羊祜从姐妹","gender":"女","family":"泰山羊氏","birth":"","death":"","note":"晋书羊祜传：從甥王衍嘗詣祜陳事，辭甚俊辨。"},{"id":"P140","name":"任氏（王澄母）","zi":"王澄母，疑任恺同族","gender":"女","family":"-","birth":"","death":"","note":"妻妾不明，疑妾室《世说新语注·规箴·10》：永嘉流人名曰：“澄父乂，第三，娶乐安任氏女，生澄。”"},{"id":"P141","name":"王衍","zi":"字夷甫","gender":"男","family":"琅琊王氏","birth":"","death":"","note":"郭豫女婿（《三国志·郭淮传》注引《晋诸公赞》：\"（郭豫）女适王衍\"）；羊祜从甥（晋书·羊祜传"},{"id":"P142","name":"王澄","zi":"字平子","gender":"男","family":"琅琊王氏","birth":"","death":"","note":"王衍之弟。晋书王戎传附王衍、衍弟澄"},{"id":"P143","name":"王惠风","zi":"字惠风（名不详）","gender":"女","family":"琅琊王氏","birth":"","death":"311","note":"愍怀太子妃，太尉王衍之女，母郭氏（郭豫之女）；贞婉有志节。太子被废，王衍请绝婚，惠风号哭而归。刘曜陷洛阳（311年），以惠风赐其将乔属，惠风拔剑拒之，为属所杀（《晋书》卷96·列女传）"},{"id":"P144","name":"王景风","zi":"","gender":"女","family":"琅琊王氏","birth":"","death":"","note":"王衍长女，貌美；贾后为贾谧聘之（《晋书》卷53·愍怀太子传）"},{"id":"P145","name":"王氏（王衍女，裴遐妻）","zi":"王衍女，裴遐妻","gender":"女","family":"琅琊王氏","birth":"","death":"","note":"王衍第四女，适裴遐（司空掾、散骑郎）；《世说新语·文学》注引《永嘉流人名》“衍字夷甫，第四女适遐也”；夫裴遐为裴绰之子（《世说新语注·文学第四·19》；《晋书》卷35·裴秀传）"},{"id":"P146","name":"王戎","zi":"字濬冲","gender":"男","family":"琅琊王氏","birth":"","death":"","note":""},{"id":"P147","name":"王氏（王戎女，裴頠妻）","zi":"王戎女，裴頠妻","gender":"女","family":"琅琊王氏","birth":"","death":"","note":"王戎长女"},{"id":"P148","name":"王祥","zi":"字休徵","gender":"男","family":"琅琊王氏","birth":"","death":"","note":""},{"id":"P149","name":"王览","zi":"字玄通","gender":"男","family":"琅琊王氏","birth":"","death":"","note":""},{"id":"P150","name":"王裁","zi":"字士初","gender":"男","family":"琅琊王氏","birth":"","death":"","note":"王览长子。晋书王祥传附王览传：有六子：裁、基、會、正、彥、琛。裁字士初，撫軍長史。基字士先，治書御史。會字士和，侍御史。正字士則，尚書郎。彥字士治，中護軍。琛字士瑋，國子祭酒。"},{"id":"P151","name":"王基（王敦父）","zi":"字士先","gender":"男","family":"琅琊王氏","birth":"","death":"","note":"王览次子。注意不是魏征南将军王基，他是东莱曲城人"},{"id":"P152","name":"王导","zi":"字茂弘","gender":"男","family":"琅琊王氏","birth":"","death":"","note":"王裁嗣子，晋书王导传：光祿大夫覽之孫也。父裁，鎮軍司馬。……初襲祖爵即丘子。"},{"id":"P153","name":"王正","zi":"字士则","gender":"男","family":"琅琊王氏","birth":"","death":"","note":"王览第四子，王羲之祖父。"}],"marriages":[{"id":"M001","husbandId":"P001","husbandName":"司马昭","wifeId":"P002","wifeName":"王元姬","type":"妻","order":"1"},{"id":"M002","husbandId":"P003","husbandName":"司马师","wifeId":"P004","wifeName":"羊徽瑜","type":"继室","order":"3"},{"id":"M003","husbandId":"P040","husbandName":"司马炎","wifeId":"P078","wifeName":"杨艳","type":"妻","order":"1"},{"id":"M004","husbandId":"P040","husbandName":"司马炎","wifeId":"P079","wifeName":"杨芷","type":"继室","order":"2"},{"id":"M005","husbandId":"P106","husbandName":"卫恒","wifeId":"P129","wifeName":"王氏（王浑女，卫恒妻）","type":"妻","order":"1"},{"id":"M006","husbandId":"P059","husbandName":"卫宣","wifeId":"P058","wifeName":"繁昌公主","type":"妻","order":"1"},{"id":"M007","husbandId":"P108","husbandName":"卫玠","wifeId":"P109","wifeName":"乐氏（乐广女，卫玠妻）","type":"妻","order":"1"},{"id":"M008","husbandId":"P108","husbandName":"卫玠","wifeId":"P110","wifeName":"山氏（山简女，卫玠继室）","type":"继室","order":"2"},{"id":"M009","husbandId":"P061","husbandName":"王济","wifeId":"P060","wifeName":"常山公主","type":"妻","order":"1"},{"id":"M010","husbandId":"P085","husbandName":"贾充","wifeId":"P086","wifeName":"李婉","type":"妻","order":"1"},{"id":"M011","husbandId":"P085","husbandName":"贾充","wifeId":"P123","wifeName":"郭槐","type":"继室","order":"2"},{"id":"M012","husbandId":"P090","husbandName":"韩寿","wifeId":"P089","wifeName":"贾午","type":"妻","order":"1"},{"id":"M013","husbandId":"P041","husbandName":"司马攸","wifeId":"P087","wifeName":"贾荃","type":"妻","order":"1"},{"id":"M014","husbandId":"P096","husbandName":"裴秀","wifeId":"P124","wifeName":"郭氏（郭配女，裴秀妻）","type":"妻","order":"1"},{"id":"M015","husbandId":"P141","husbandName":"王衍","wifeId":"P125","wifeName":"郭氏（郭豫女，王衍妻）","type":"妻","order":"1"},{"id":"M016","husbandId":"P102","husbandName":"裴頠","wifeId":"P147","wifeName":"王氏（王戎女，裴頠妻）","type":"妻","order":"1"},{"id":"M017","husbandId":"P052","husbandName":"司马颖","wifeId":"P053","wifeName":"乐氏（乐广女，司马颖妃）","type":"妻","order":"1"},{"id":"M018","husbandId":"P050","husbandName":"司马晏","wifeId":"P136","wifeName":"荀氏（荀勖女，司马晏妃）","type":"妻","order":"1"},{"id":"M019","husbandId":"P063","husbandName":"王敦","wifeId":"P062","wifeName":"襄城公主","type":"妻","order":"1"},{"id":"M020","husbandId":"P044","husbandName":"司马衷","wifeId":"P088","wifeName":"贾南风","type":"妻","order":"1"},{"id":"M021","husbandId":"P044","husbandName":"司马衷","wifeId":"-","wifeName":"谢玖","type":"妾","order":"-"},{"id":"M022","husbandId":"P044","husbandName":"司马衷","wifeId":"P012","wifeName":"羊献容","type":"继室","order":"2"},{"id":"M023","husbandId":"P127","husbandName":"王浑","wifeId":"P128","wifeName":"钟琰","type":"妻","order":"1"},{"id":"M024","husbandId":"P040","husbandName":"司马炎","wifeId":"-","wifeName":"审美人","type":"妾","order":"-"},{"id":"M025","husbandId":"P040","husbandName":"司马炎","wifeId":"-","wifeName":"程才人","type":"妾","order":"-"},{"id":"M026","husbandId":"P040","husbandName":"司马炎","wifeId":"-","wifeName":"李夫人","type":"妾","order":"-"},{"id":"M027","husbandId":"P040","husbandName":"司马炎","wifeId":"P083","wifeName":"胡芳","type":"妾","order":"-"},{"id":"M028","husbandId":"P040","husbandName":"司马炎","wifeId":"P084","wifeName":"王媛姬","type":"妾","order":"-"},{"id":"M029","husbandId":"P067","husbandName":"王粹","wifeId":"P064","wifeName":"颍川公主","type":"妻","order":"1"},{"id":"M030","husbandId":"P069","husbandName":"华恒","wifeId":"P068","wifeName":"荥阳公主","type":"妻","order":"1"},{"id":"M031","husbandId":"P071","husbandName":"温羡","wifeId":"P070","wifeName":"武安公主","type":"妻","order":"1"},{"id":"M032","husbandId":"P103","husbandName":"裴瓒","wifeId":"P075","wifeName":"杨氏（杨骏女，裴瓒妻）","type":"妻","order":"1"},{"id":"M033","husbandId":"P131","husbandName":"和峤","wifeId":"P130","wifeName":"王氏（王浑女，和峤妻）","type":"妻","order":"1"},{"id":"M034","husbandId":"P097","husbandName":"裴楷","wifeId":"P132","wifeName":"王氏（王浑女，裴楷妻）","type":"妻","order":"1"},{"id":"M035","husbandId":"P107","husbandName":"卫岳","wifeId":"P101","wifeName":"裴氏（裴楷女，卫岳妻）","type":"妻","order":"1"},{"id":"M036","husbandId":"P045","husbandName":"司马遹","wifeId":"P143","wifeName":"王惠风","type":"妻","order":"1"},{"id":"M037","husbandId":"P092","husbandName":"贾谧","wifeId":"P144","wifeName":"王景风","type":"妻","order":"1"},{"id":"M038","husbandId":"P100","husbandName":"裴遐","wifeId":"P145","wifeName":"王氏（王衍女，裴遐妻）","type":"妻","order":"1"},{"id":"M039","husbandId":"P005","husbandName":"羊衜","wifeId":"-","wifeName":"孔氏（孔融女）","type":"妻","order":"1"},{"id":"M040","husbandId":"P005","husbandName":"羊衜","wifeId":"-","wifeName":"蔡氏（蔡邕女）","type":"继室","order":"2"},{"id":"M041","husbandId":"P006","husbandName":"羊耽","wifeId":"-","wifeName":"辛宪英","type":"妻","order":"1"},{"id":"M042","husbandId":"P007","husbandName":"羊祜","wifeId":"P008","wifeName":"夏侯氏（夏侯霸女，羊祜妻）","type":"妻","order":"1"},{"id":"M043","husbandId":"P021","husbandName":"司马觐","wifeId":"P022","wifeName":"夏侯光姬","type":"妻","order":"1"},{"id":"M044","husbandId":"P027","husbandName":"夏侯庄","wifeId":"P028","wifeName":"羊氏（羊耽女，夏侯庄妻）","type":"妻","order":"1"},{"id":"M045","husbandId":"P026","husbandName":"夏侯骏","wifeId":"P018","wifeName":"司马氏（司马亮女，夏侯骏妻）","type":"妻","order":"1"},{"id":"M046","husbandId":"P104","husbandName":"裴舆","wifeId":"P017","wifeName":"司马氏（司马亮女，裴舆妻）","type":"妻","order":"1"},{"id":"M047","husbandId":"P019","husbandName":"司马伷","wifeId":"P020","wifeName":"诸葛太妃","type":"妻","order":"1"},{"id":"M048","husbandId":"P031","husbandName":"司马澹","wifeId":"P032","wifeName":"郭氏（司马澹妻）","type":"妻","order":"1"},{"id":"M049","husbandId":"P040","husbandName":"司马炎","wifeId":"P082","wifeName":"赵粲","type":"妾","order":"-"},{"id":"M050","husbandId":"P072","husbandName":"杨炳","wifeId":"P073","wifeName":"赵氏（杨艳母）","type":"妻","order":"1"},{"id":"M051","husbandId":"P038","husbandName":"司马荂","wifeId":"P039","wifeName":"刘氏（刘舆刘琨姊妹，司马荂妻）","type":"妻","order":"1"},{"id":"M052","husbandId":"-","husbandName":"司马懿","wifeId":"P015","wifeName":"伏夫人","type":"妾","order":"-"},{"id":"M053","husbandId":"P043","husbandName":"甄德","wifeId":"P042","wifeName":"京兆公主","type":"继室","order":"2"},{"id":"M054","husbandId":"P138","husbandName":"王乂","wifeId":"P139","wifeName":"羊氏（王衍母）","type":"妻","order":"1"},{"id":"M055","husbandId":"P138","husbandName":"王乂","wifeId":"P140","wifeName":"任氏（王澄母）","type":"妾","order":"-"},{"id":"M056","husbandId":"P153","husbandName":"王正","wifeId":"P030","wifeName":"夏侯氏（夏侯庄女，王正妻）","type":"妻","order":""}],"children":[{"id":"C001","childId":"P040","childName":"司马炎","fatherId":"P001","fatherName":"司马昭","motherId":"P002","motherName":"王元姬","rel":"亲生","rank":"2"},{"id":"C002","childId":"P041","childName":"司马攸","fatherId":"P001","fatherName":"司马昭","motherId":"P002","motherName":"王元姬","rel":"亲生","rank":"3"},{"id":"C003","childId":"P041","childName":"司马攸","fatherId":"P003","fatherName":"司马师","motherId":"P004","motherName":"羊徽瑜","rel":"过继入","rank":""},{"id":"C004","childId":"P044","childName":"司马衷","fatherId":"P040","fatherName":"司马炎","motherId":"P078","motherName":"杨艳","rel":"亲生","rank":"2"},{"id":"C005","childId":"P079","childName":"杨芷","fatherId":"P074","fatherName":"杨骏","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C006","childId":"P106","childName":"卫恒","fatherId":"P105","fatherName":"卫瓘","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C007","childId":"P059","childName":"卫宣","fatherId":"P105","fatherName":"卫瓘","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"4"},{"id":"C008","childId":"P108","childName":"卫玠","fatherId":"P106","fatherName":"卫恒","motherId":"P129","motherName":"王氏（王浑女，卫恒妻）","rel":"亲生","rank":"2"},{"id":"C009","childId":"P058","childName":"繁昌公主","fatherId":"P040","fatherName":"司马炎","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":""},{"id":"C010","childId":"P060","childName":"常山公主","fatherId":"P001","fatherName":"司马昭","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":""},{"id":"C011","childId":"P061","childName":"王济","fatherId":"P127","fatherName":"王浑","motherId":"P128","motherName":"钟琰","rel":"亲生","rank":"2"},{"id":"C012","childId":"P088","childName":"贾南风","fatherId":"P085","fatherName":"贾充","motherId":"P123","motherName":"郭槐","rel":"亲生","rank":"3"},{"id":"C013","childId":"P089","childName":"贾午","fatherId":"P085","fatherName":"贾充","motherId":"P123","motherName":"郭槐","rel":"亲生","rank":"4"},{"id":"C014","childId":"P087","childName":"贾荃","fatherId":"P085","fatherName":"贾充","motherId":"P086","motherName":"李婉","rel":"亲生","rank":"1"},{"id":"C015","childId":"P091","childName":"贾黎民","fatherId":"P085","fatherName":"贾充","motherId":"P123","motherName":"郭槐","rel":"亲生","rank":""},{"id":"C016","childId":"P092","childName":"贾谧","fatherId":"P090","fatherName":"韩寿","motherId":"P089","motherName":"贾午","rel":"亲生","rank":""},{"id":"C017","childId":"P092","childName":"贾谧","fatherId":"P091","fatherName":"贾黎民","motherId":"-","motherName":"-","rel":"过继入","rank":""},{"id":"C018","childId":"P123","childName":"郭槐","fatherId":"P115","fatherName":"郭配","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C019","childId":"P117","childName":"郭展","fatherId":"P115","fatherName":"郭配","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C020","childId":"P118","childName":"郭豫","fatherId":"P115","fatherName":"郭配","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C021","childId":"P124","childName":"郭氏（郭配女，裴秀妻）","fatherId":"P115","fatherName":"郭配","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C022","childId":"P125","childName":"郭氏（郭豫女，王衍妻）","fatherId":"P118","fatherName":"郭豫","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C023","childId":"P119","childName":"郭奕","fatherId":"P116","fatherName":"郭镇","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C024","childId":"P120","childName":"郭氏（郭镇女，刘蕃妻）","fatherId":"P116","fatherName":"郭镇","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C025","childId":"P121","childName":"刘舆","fatherId":"-","fatherName":"刘蕃","motherId":"P120","motherName":"郭氏（郭镇女，刘蕃妻）","rel":"亲生","rank":""},{"id":"C026","childId":"P039","childName":"刘氏（刘舆刘琨姊妹，司马荂妻）","fatherId":"-","fatherName":"刘蕃","motherId":"P120","motherName":"郭氏（郭镇女，刘蕃妻）","rel":"亲生","rank":"<刘舆"},{"id":"C027","childId":"P122","childName":"刘琨","fatherId":"-","fatherName":"刘蕃","motherId":"P120","motherName":"郭氏（郭镇女，刘蕃妻）","rel":"亲生","rank":"<刘氏（刘舆刘琨姊妹，司马荂妻）"},{"id":"C028","childId":"P102","childName":"裴頠","fatherId":"P096","fatherName":"裴秀","motherId":"P124","motherName":"郭氏（郭配女，裴秀妻）","rel":"亲生","rank":"2"},{"id":"C029","childId":"P147","childName":"王氏（王戎女，裴頠妻）","fatherId":"P146","fatherName":"王戎","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"1"},{"id":"C030","childId":"P097","childName":"裴楷","fatherId":"P095","fatherName":"裴徽","motherId":"-","motherName":"","rel":"亲生","rank":"3"},{"id":"C031","childId":"P136","childName":"荀氏（荀勖女，司马晏妃）","fatherId":"P133","fatherName":"荀勖","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C032","childId":"P134","childName":"荀藩","fatherId":"P133","fatherName":"荀勖","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C033","childId":"P135","childName":"荀组","fatherId":"P133","fatherName":"荀勖","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C034","childId":"P112","childName":"山简","fatherId":"P113","fatherName":"山涛","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"5"},{"id":"C035","childId":"P062","childName":"襄城公主","fatherId":"P040","fatherName":"司马炎","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":""},{"id":"C036","childId":"P109","childName":"乐氏（乐广女，卫玠妻）","fatherId":"P111","fatherName":"乐广","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C037","childId":"P053","childName":"乐氏（乐广女，司马颖妃）","fatherId":"P111","fatherName":"乐广","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C038","childId":"P110","childName":"山氏（山简女，卫玠继室）","fatherId":"P112","fatherName":"山简","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C039","childId":"P054","childName":"司马冏","fatherId":"P041","fatherName":"司马攸","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":"3或4"},{"id":"C040","childId":"P055","childName":"司马蕤","fatherId":"P041","fatherName":"司马攸","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":"1"},{"id":"C041","childId":"P056","childName":"司马寔","fatherId":"P041","fatherName":"司马攸","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":"2"},{"id":"C042","childId":"P046","childName":"司马柬","fatherId":"P040","fatherName":"司马炎","motherId":"P078","motherName":"杨艳","rel":"亲生","rank":"3"},{"id":"C043","childId":"P047","childName":"司马乂","fatherId":"P040","fatherName":"司马炎","motherId":"-","motherName":"审美人","rel":"亲生","rank":"<司马玮"},{"id":"C044","childId":"P048","childName":"司马玮","fatherId":"P040","fatherName":"司马炎","motherId":"-","motherName":"审美人","rel":"亲生","rank":">司马乂"},{"id":"C045","childId":"P049","childName":"司马允","fatherId":"P040","fatherName":"司马炎","motherId":"-","motherName":"李夫人","rel":"亲生","rank":">司马晏"},{"id":"C046","childId":"P050","childName":"司马晏","fatherId":"P040","fatherName":"司马炎","motherId":"-","motherName":"李夫人","rel":"亲生","rank":"<司马允"},{"id":"C047","childId":"P051","childName":"司马炽","fatherId":"P040","fatherName":"司马炎","motherId":"P084","motherName":"王媛姬","rel":"亲生","rank":""},{"id":"C048","childId":"P057","childName":"司马邺","fatherId":"P050","fatherName":"司马晏","motherId":"P136","motherName":"荀氏（荀勖女，司马晏妃）","rel":"亲生","rank":""},{"id":"C049","childId":"P057","childName":"司马邺","fatherId":"P046","fatherName":"司马柬","motherId":"-","motherName":"（不详）","rel":"过继入","rank":""},{"id":"C050","childId":"P064","childName":"颍川公主","fatherId":"P040","fatherName":"司马炎","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":""},{"id":"C051","childId":"P068","childName":"荥阳公主","fatherId":"P040","fatherName":"司马炎","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":""},{"id":"C052","childId":"P070","childName":"武安公主","fatherId":"P040","fatherName":"司马炎","motherId":"P083","motherName":"胡芳","rel":"亲生","rank":""},{"id":"C053","childId":"P096","childName":"裴秀","fatherId":"P094","fatherName":"裴潜","motherId":"-","motherName":"（庶母）","rel":"亲生","rank":""},{"id":"C054","childId":"P104","childName":"裴舆","fatherId":"P097","fatherName":"裴楷","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"1"},{"id":"C055","childId":"P103","childName":"裴瓒","fatherId":"P097","fatherName":"裴楷","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"2"},{"id":"C056","childId":"P098","childName":"裴宪","fatherId":"P097","fatherName":"裴楷","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"3"},{"id":"C057","childId":"P075","childName":"杨氏（杨骏女，裴瓒妻）","fatherId":"P074","fatherName":"杨骏","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"2"},{"id":"C058","childId":"P130","childName":"王氏（王浑女，和峤妻）","fatherId":"P127","fatherName":"王浑","motherId":"-","motherName":"（不详）","rel":"亲生","rank":">王济"},{"id":"C059","childId":"P132","childName":"王氏（王浑女，裴楷妻）","fatherId":"P127","fatherName":"王浑","motherId":"-","motherName":"（不详）","rel":"亲生","rank":">王济"},{"id":"C060","childId":"P107","childName":"卫岳","fatherId":"P105","fatherName":"卫瓘","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"3"},{"id":"C061","childId":"P101","childName":"裴氏（裴楷女，卫岳妻）","fatherId":"P097","fatherName":"裴楷","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C062","childId":"P052","childName":"司马颖","fatherId":"P040","fatherName":"司马炎","motherId":"-","motherName":"程才人","rel":"亲生","rank":""},{"id":"C063","childId":"P045","childName":"司马遹","fatherId":"P044","fatherName":"司马衷","motherId":"-","motherName":"谢玖","rel":"亲生","rank":"1"},{"id":"C064","childId":"P066","childName":"王畅","fatherId":"P065","fatherName":"王濬","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C065","childId":"P067","childName":"王粹","fatherId":"P066","fatherName":"王畅","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C066","childId":"P143","childName":"王惠风","fatherId":"P141","fatherName":"王衍","motherId":"P125","motherName":"郭氏（郭豫女，王衍妻）","rel":"亲生","rank":""},{"id":"C067","childId":"P144","childName":"王景风","fatherId":"P141","fatherName":"王衍","motherId":"P125","motherName":"郭氏（郭豫女，王衍妻）","rel":"亲生","rank":"1"},{"id":"C068","childId":"P145","childName":"王氏（王衍女，裴遐妻）","fatherId":"P141","fatherName":"王衍","motherId":"P125","motherName":"郭氏（郭豫女，王衍妻）","rel":"亲生","rank":"4"},{"id":"C069","childId":"P099","childName":"裴绰","fatherId":"P095","fatherName":"裴徽","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"4"},{"id":"C070","childId":"P100","childName":"裴遐","fatherId":"P099","fatherName":"裴绰","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C071","childId":"P129","childName":"王氏（王浑女，卫恒妻）","fatherId":"P127","fatherName":"王浑","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C072","childId":"P004","childName":"羊徽瑜","fatherId":"P005","fatherName":"羊衜","motherId":"-","motherName":"蔡氏","rel":"亲生","rank":">羊祜"},{"id":"C073","childId":"P007","childName":"羊祜","fatherId":"P005","fatherName":"羊衜","motherId":"-","motherName":"蔡氏","rel":"亲生","rank":""},{"id":"C074","childId":"P009","childName":"羊瑾","fatherId":"P006","fatherName":"羊耽","motherId":"-","motherName":"辛宪英","rel":"亲生","rank":">羊琇"},{"id":"C075","childId":"P010","childName":"羊琇","fatherId":"P006","fatherName":"羊耽","motherId":"-","motherName":"辛宪英","rel":"亲生","rank":""},{"id":"C076","childId":"P028","childName":"羊氏（羊耽女，夏侯庄妻）","fatherId":"P006","fatherName":"羊耽","motherId":"-","motherName":"辛宪英","rel":"亲生","rank":""},{"id":"C077","childId":"P011","childName":"羊玄之","fatherId":"P009","fatherName":"羊瑾","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C078","childId":"P012","childName":"羊献容","fatherId":"P011","fatherName":"羊玄之","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C079","childId":"P017","childName":"司马氏（司马亮女，裴舆妻）","fatherId":"P016","fatherName":"司马亮","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C080","childId":"P018","childName":"司马氏（司马亮女，夏侯骏妻）","fatherId":"P016","fatherName":"司马亮","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C081","childId":"P021","childName":"司马觐","fatherId":"P019","fatherName":"司马伷","motherId":"P020","motherName":"诸葛太妃","rel":"亲生","rank":"1"},{"id":"C082","childId":"P023","childName":"司马睿","fatherId":"P021","fatherName":"司马觐","motherId":"P022","motherName":"夏侯光姬","rel":"亲生","rank":"1"},{"id":"C083","childId":"P026","childName":"夏侯骏","fatherId":"P025","fatherName":"夏侯威","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"1"},{"id":"C084","childId":"P027","childName":"夏侯庄","fatherId":"P025","fatherName":"夏侯威","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"2"},{"id":"C085","childId":"P029","childName":"夏侯湛","fatherId":"P027","fatherName":"夏侯庄","motherId":"-","motherName":"（不详）","rel":"亲生","rank":">夏侯光姬"},{"id":"C086","childId":"P022","childName":"夏侯光姬","fatherId":"P027","fatherName":"夏侯庄","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C087","childId":"P030","childName":"夏侯氏（夏侯庄女，王正妻）","fatherId":"P027","fatherName":"夏侯庄","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C088","childId":"P008","childName":"夏侯氏（夏侯霸女，羊祜妻）","fatherId":"P024","fatherName":"夏侯霸","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C089","childId":"P001","childName":"司马昭","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"张春华","rel":"亲生","rank":"<司马师"},{"id":"C090","childId":"P003","childName":"司马师","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"张春华","rel":"亲生","rank":""},{"id":"C091","childId":"P034","childName":"司马干","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"张春华","rel":"亲生","rank":"<司马昭"},{"id":"C092","childId":"P016","childName":"司马亮","fatherId":"-","fatherName":"司马懿","motherId":"P015","motherName":"伏夫人","rel":"亲生","rank":"3"},{"id":"C093","childId":"P019","childName":"司马伷","fatherId":"-","fatherName":"司马懿","motherId":"P015","motherName":"伏夫人","rel":"亲生","rank":"<司马亮"},{"id":"C094","childId":"P035","childName":"司马骏","fatherId":"-","fatherName":"司马懿","motherId":"P015","motherName":"伏夫人","rel":"亲生","rank":"<司马伷"},{"id":"C095","childId":"P036","childName":"司马肜","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"张夫人","rel":"亲生","rank":"8"},{"id":"C096","childId":"P037","childName":"司马伦","fatherId":"-","fatherName":"司马懿","motherId":"-","motherName":"柏夫人","rel":"亲生","rank":"9"},{"id":"C097","childId":"P031","childName":"司马澹","fatherId":"P019","fatherName":"司马伷","motherId":"P020","motherName":"诸葛太妃","rel":"亲生","rank":"2"},{"id":"C098","childId":"P033","childName":"司马繇","fatherId":"P019","fatherName":"司马伷","motherId":"P020","motherName":"诸葛太妃","rel":"亲生","rank":"3"},{"id":"C099","childId":"P038","childName":"司马荂","fatherId":"P037","fatherName":"司马伦","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C100","childId":"P078","childName":"杨艳","fatherId":"P072","fatherName":"杨炳","motherId":"P073","motherName":"赵氏（杨艳母）","rel":"亲生","rank":""},{"id":"C101","childId":"P082","childName":"赵粲","fatherId":"P080","fatherName":"赵虞","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C102","childId":"P002","childName":"王元姬","fatherId":"-","fatherName":"王肃","motherId":"-","motherName":"羊氏","rel":"亲生","rank":""},{"id":"C103","childId":"P013","childName":"王恂","fatherId":"-","fatherName":"王肃","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C104","childId":"P014","childName":"王恺","fatherId":"-","fatherName":"王肃","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C105","childId":"P042","childName":"京兆公主","fatherId":"P001","fatherName":"司马昭","motherId":"P002","motherName":"王元姬","rel":"亲生","rank":"1"},{"id":"C106","childId":"P146","childName":"王戎","fatherId":"P137","fatherName":"王浑（王戎父）","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C107","childId":"P141","childName":"王衍","fatherId":"P138","fatherName":"王乂","motherId":"P139","motherName":"羊氏（王衍母）","rel":"亲生","rank":""},{"id":"C108","childId":"P142","childName":"王澄","fatherId":"P138","fatherName":"王乂","motherId":"P140","motherName":"任氏（王澄母）","rel":"亲生","rank":"<王衍"},{"id":"C109","childId":"P150","childName":"王裁","fatherId":"P149","fatherName":"王览","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"1"},{"id":"C110","childId":"P151","childName":"王基（王敦父）","fatherId":"P149","fatherName":"王览","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"2"},{"id":"C111","childId":"P153","childName":"王正","fatherId":"P149","fatherName":"王览","motherId":"-","motherName":"（不详）","rel":"亲生","rank":"4"},{"id":"C112","childId":"P152","childName":"王导","fatherId":"P150","fatherName":"王裁","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""},{"id":"C113","childId":"P063","childName":"王敦","fatherId":"P151","fatherName":"王基（王敦父）","motherId":"-","motherName":"（不详）","rel":"亲生","rank":""}],"families":[{"name":"河内司马氏","hex":"#C00000","text":"#FFFFFF"},{"name":"弘农杨氏","hex":"#FAAC90","text":"#000000"},{"name":"平阳贾氏","hex":"#C9A4E4","text":"#000000"},{"name":"河东裴氏","hex":"#A3DBF7","text":"#000000"},{"name":"河东卫氏","hex":"#99FFCC","text":"#000000"},{"name":"太原郭氏","hex":"#FFBC01","text":"#000000"},{"name":"太原王氏","hex":"#FF9900","text":"#000000"},{"name":"颍川荀氏","hex":"#BBC0FB","text":"#000000"},{"name":"泰山羊氏","hex":"#FFFFCC","text":"#000000"},{"name":"东海王氏","hex":"#E0FFCD","text":"#000000"},{"name":"琅琊王氏","hex":"#C4D79B","text":"#000000"}],"collaterals":[{"id":"S001","members":[{"id":"P005","name":"羊衜"},{"id":"P006","name":"羊耽"}],"term":"兄弟","source":"《晋书》卷34·羊祜传","note":""},{"id":"S002","members":[{"id":"P024","name":"夏侯霸"},{"id":"P025","name":"夏侯威"}],"term":"兄弟","source":"《三国志·魏书·夏侯渊传》注引《世语》：夏侯霸、夏侯威兄弟","note":""},{"id":"S003","members":[{"id":"P072","name":"杨炳"},{"id":"P074","name":"杨骏"},{"id":"P076","name":"杨珧"},{"id":"P077","name":"杨济"}],"term":"兄弟","source":"《晋书》卷40·杨骏传：骏及珧、济势倾天下，时人有\"三杨\"之号","note":""},{"id":"S004","members":[{"id":"P094","name":"裴潜"},{"id":"P095","name":"裴徽"}],"term":"兄弟","source":"《晋书》卷35·裴秀传：秀叔父徽有盛名","note":"裴潜为兄（裴秀之父），裴徽为弟（裴楷之父）"},{"id":"S005","members":[{"id":"P114","name":"郭淮"},{"id":"P115","name":"郭配"},{"id":"P116","name":"郭镇"}],"term":"兄弟","source":"《三国志·郭淮传》注引《晋诸公赞》：淮弟配、镇","note":""},{"id":"S006","members":[{"id":"P123","name":"郭槐"},{"id":"P126","name":"郭彰"}],"term":"从兄弟姐妹","source":"《晋书》卷40·贾充传：郭彰，郭槐从弟","note":""},{"id":"S007","members":[{"id":"P088","name":"贾南风"},{"id":"P032","name":"郭氏（司马澹妻）"}],"term":"表姐妹","source":"《晋书》卷38：澹妻郭氏，贾后内妹也","note":""},{"id":"S008","members":[{"id":"P080","name":"赵虞"},{"id":"P081","name":"赵俊"},{"id":"P073","name":"赵氏（杨艳母）"}],"term":"兄弟姐妹","source":"","note":""},{"id":"S009","members":[{"id":"P085","name":"贾充"},{"id":"P093","name":"贾模"}],"term":"从父子","source":"","note":""},{"id":"S010","members":[{"id":"P002","name":"王元姬"},{"id":"P013","name":"王恂"},{"id":"P014","name":"王恺"}],"term":"兄弟","source":"","note":""},{"id":"S011","members":[{"id":"P137","name":"王浑（王戎父）"},{"id":"P138","name":"王乂"}],"term":"兄弟","source":"","note":""},{"id":"S012","members":[{"id":"P007","name":"羊祜"},{"id":"P139","name":"羊氏（王衍母）"}],"term":"从兄弟姐妹","source":"","note":""},{"id":"S013","members":[{"id":"P148","name":"王祥"},{"id":"P149","name":"王览"}],"term":"兄弟","source":"","note":""}]};</script>
 <script>/* core.js —— 数据模型 + 布局引擎（不依赖 DOM，可在 Node 里测试）
  * 对应需求文档 v0.1：R01–R03 R07–R14 R16 R19(双竖线) R22–R25 D1 D6 D7
  */
@@ -126,6 +138,7 @@
     CHILD_GAP: 22,          // 子女卡片之间的间隙
     PAIR_GAP: 34,           // 子女与其联姻对象卡片之间的间隙
     MARGIN: 26,             // 相邻两组子女之间的最小间隙
+    BRACKET: 18,            // 婚姻括线的横杠距卡片底部的距离
     ROW_GAP: 200,           // 配偶行与子女行的垂直距离
     BUS_OFF: 34,            // 分叉横线距子女卡片顶部的距离
     ICON: 22                // 联姻对象小图标的直径
@@ -190,7 +203,67 @@
     const childrenByFather = new Map(), childrenByMother = new Map(), childrenByChild = new Map();
     children.forEach(c => { push(childrenByFather, c.father, c); push(childrenByMother, c.mother, c); push(childrenByChild, c.child, c); });
 
-    const model = { persons, marriages, children, families, marriagesByHusband, marriagesByWife, childrenByFather, childrenByMother, childrenByChild };
+    // 旁系关系表里的"亲兄弟姐妹"行：给每一组挂一位看不见的共同母亲（键以 'v:' 开头，不是真人，不画卡片、不画向上的线）。
+    // 这样整套现有逻辑（核心家庭居中、选中人物自己的配偶子女展开、+N、点卡片换人）都自动适用。
+    // 只收没有真实父母记录的人（有父母记录的以亲子表为准）；行内顺序＝左长右幼；共用同一个人的行自动并成一组。
+    {
+      const SIB_TERMS = new Set(['兄弟', '姐妹', '兄妹', '姐弟', '兄弟姐妹']);
+      const HALF_TERMS = new Set(['异母兄弟', '异母姐妹', '异母兄妹', '异母姐弟', '异母兄弟姐妹']);   // 同父异母：同组、但灰显
+      const groups = [], fullEdges = [];
+      (raw.collaterals || []).filter(c => SIB_TERMS.has(c.term) || HALF_TERMS.has(c.term)).forEach(c => {
+        const ids = c.members.map(m => m.id).filter(id => persons.has(id) && !childrenByChild.has(id));
+        if (ids.length < 2) return;
+        if (SIB_TERMS.has(c.term)) fullEdges.push(ids);
+        const hit = groups.filter(g => ids.some(id => g.includes(id)));
+        const merged = [];
+        hit.forEach(g => g.forEach(id => { if (!merged.includes(id)) merged.push(id); }));
+        ids.forEach(id => { if (!merged.includes(id)) merged.push(id); });
+        hit.forEach(g => groups.splice(groups.indexOf(g), 1));
+        groups.push(merged);
+      });
+      const comp = new Map();                           // 亲兄弟小组：只有"亲"行把人连在一起，异母行不连
+      const find = x => { while (comp.has(x) && comp.get(x) !== x) x = comp.get(x); return x; };
+      fullEdges.forEach(ids => ids.forEach(id => { if (!comp.has(id)) comp.set(id, id); }));
+      fullEdges.forEach(ids => ids.slice(1).forEach(id => comp.set(find(id), find(ids[0]))));
+      groups.forEach((g, gi) => {
+        const vk = 'v:S' + gi;
+        g.forEach((id, i) => {
+          const row = { id: vk + '#' + i, child: id, father: null, mother: vk, motherLabel: null, rel: '亲生', rank: '', idx: 100000 + gi * 100 + i, virtual: true, fullComp: comp.has(id) ? find(id) : id };
+          children.push(row); push(childrenByMother, vk, row); push(childrenByChild, id, row);
+        });
+      });
+    }
+
+    // 旁系关系表里直接写的同辈关系（堂/从/表/再从/族）：两人一条记录；跨辈（从子等）暂不画
+    const collateralPairs = new Map(), collateralOf = new Map(), crossList = [];
+    {
+      const relKind = t => /^再从/.test(t) ? 'zc' : /^堂/.test(t) ? 'tang' : /^从(兄弟|姐妹|兄妹|姐弟)/.test(t) ? 'tang' : /^表(兄弟|姐妹|兄妹|姐弟)/.test(t) ? 'biao' : /^族(兄弟|姐妹|兄妹|姐弟)/.test(t) ? 'zu' : null;
+      const crossRe = /^(从父子|从父女|从子|从女|堂侄|堂侄女|侄|侄女|外甥|外甥女)$/;       // 差一辈：第1位＝长辈，第2位＝晚辈
+      (raw.collaterals || []).forEach(c => {
+        const term = String(c.term || '');
+        if (crossRe.test(term)) {
+          const ids = c.members.map(m => m.id).filter(id => persons.has(id));
+          ids.slice(1).forEach(y => {
+            crossList.push({ elder: ids[0], younger: y, term, rowId: c.id });
+            push(collateralOf, ids[0], { other: y, kind: 'cross', dir: 'down', term, rowId: c.id });
+            push(collateralOf, y, { other: ids[0], kind: 'cross', dir: 'up', term, rowId: c.id });
+          });
+          return;
+        }
+        const kind = relKind(term);
+        if (!kind) return;
+        const ids = c.members.map(m => m.id).filter(id => persons.has(id));
+        for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+          const a = ids[i], b = ids[j];
+          if (collateralPairs.has(a + '|' + b)) continue;
+          const info = { kind, rowId: c.id, term: c.term };
+          collateralPairs.set(a + '|' + b, info); collateralPairs.set(b + '|' + a, info);
+          push(collateralOf, a, Object.assign({ other: b }, info)); push(collateralOf, b, Object.assign({ other: a }, info));
+        }
+      });
+    }
+
+    const model = { persons, marriages, children, families, marriagesByHusband, marriagesByWife, childrenByFather, childrenByMother, childrenByChild, collateralPairs, collateralOf, crossList };
     model.spousesOf = key => {
       const out = [];
       (marriagesByHusband.get(key) || []).forEach(m => out.push({ key: m.w, m }));
@@ -199,6 +272,8 @@
     };
     return model;
   }
+
+  const isVirtual = k => String(k || '').startsWith('v:');
 
   function styleOf(model, p) {
     const f = p && model.families.get(p.family);
@@ -247,7 +322,7 @@
 
   /* ------------------------------------------------------------------ 视图 */
   function defaultState() {
-    return { open: new Map(), expSp: new Set(), kidOpen: new Set(), upOpen: new Set(), mergeUnknown: true, noGray: false };
+    return { open: new Map(), expSp: new Set(), kidOpen: new Set(), upOpen: new Set(), relOpen: new Set(), mergeUnknown: true, noGray: false };
   }
 
   // R17：选中人物的"父母与兄弟姐妹"视图需要先找到他的父母
@@ -279,26 +354,243 @@
 
   // R29：父母、兄弟姐妹（R17）与本人配偶、子女合并成一张图——
   // 先单独算出"本人这一段"（跟原来一样），再把它整体嵌进"父母与兄弟姐妹"视图里选中人物所在的位置
-  function buildView(model, focus, state) {
+  function buildViewBase(model, focus, state) {
     const P = model.persons.get(focus);
     if (!P) return null;
     state = state || defaultState();
-    const own = layoutFamily(model, ownOpts(model, focus), state);
-    const up = resolveParents(model, focus);
-    if (!up) return own;                             // 没有父母记录（如杨艳）：退回只显示本人这一段
-    return layoutFamily(model, {
-      focus, axis: up.axis, solo: up.solo, soloKey: up.soloKey, coreKey: up.coreKey,
-      allOpen: true, up: true, notes: up.notes, focalChild: focus, focalOwnView: own
-    }, state);
+    const run = st => {
+      const own = layoutFamily(model, ownOpts(model, focus), st);
+      const up = resolveParents(model, focus);
+      if (!up) return own;                           // 没有父母记录（如杨艳）：退回只显示本人这一段
+      return layoutFamily(model, {
+        focus, axis: up.axis, solo: up.solo, soloKey: up.soloKey, coreKey: up.coreKey,
+        allOpen: true, up: true, notes: up.notes, focalChild: focus, focalOwnView: own
+      }, st);
+    };
+    // 第 1 遍：不展开任何联姻对象，看看哪些人本来就在画面里；第 2 遍：这些人如果又是别人的联姻对象，就不再复制卡片
+    const probe = run(Object.assign({}, state, { expSp: new Set(), twin: null }));
+    const twin = new Set(probe.cards.map(c => c.key));
+    const cnt = new Map();
+    probe.cards.forEach(c => cnt.set(c.key, (cnt.get(c.key) || 0) + 1));
+    const dupAdopt = new Set([...cnt].filter(([k, n]) => n >= 2 && (model.childrenByChild.get(k) || []).some(r => r.rel === '过继入')).map(([k]) => k));
+    return run(Object.assign({}, state, { twin, dupAdopt }));
+  }
+
+  // 过继入的养父/养母名字（用于生父母名下那张卡片的注释“出继xx”）
+  function adoptiveName(model, key) {
+    const r = (model.childrenByChild.get(key) || []).find(x => x.rel === '过继入');
+    const k = r && (r.father || r.mother);
+    const p = k && model.persons.get(k);
+    return p ? p.name.replace(/[(（].*?[)）]/g, '') : '';
+  }
+
+  function buildView(model, focus, state) {
+    const v = buildViewBase(model, focus, state);
+    if (v) { v.cards.forEach((c, i) => { c.uid = i; }); linkBrackets(model, v, state || defaultState()); relMarkers(model, v, state || defaultState()); v.kinLines = kinLines(model, v); v.adoptLinks = adoptLinks(model, v); }
+    return v;
+  }
+
+  // ---- 过继：生父母名下那张卡（灰显、注释“出继xx”）与过继入的那张之间的虚线 Π（鼠标悬停时才显示）
+  function adoptLinks(model, view) {
+    const { H } = CFG, out = [];
+    const rowTops = y => Math.min(Infinity, ...(view.kinLines || []).filter(k => Math.abs(k.y - y) < 1).map(k => k.top));
+    view.cards.filter(c => c.adoptedOut).forEach((bio, i) => {
+      const adopt = view.cards.find(c => c.key === bio.key && !c.adoptedOut);
+      if (!adopt) return;
+      const yTop = Math.min(bio.y, adopt.y) - H / 2;
+      const top = Math.min(yTop - 52, rowTops(Math.min(bio.y, adopt.y)) - 14) - 14 * i;
+      out.push({ key: bio.key, bioUid: bio.uid, adoptUid: adopt.uid, x1: bio.x + 24, x2: adopt.x + 24, y1: bio.y - H / 2, y2: adopt.y - H / 2, top, label: '过继' });
+    });
+    return out;
+  }
+
+  // ---- 联姻括线（长）：夫妻两人各在自己的家族位置、都在画面里时，不复制卡片，用一条括线把两人连起来
+  function linkBrackets(model, view, state) {
+    const { H } = CFG;
+    const grayFlag = v => state.noGray ? false : !!v;
+    const cardBy = new Map();
+    view.cards.forEach(c => { const o = cardBy.get(c.key); if (!o || o.role === 'childSpouse' || (o.adoptedOut && !c.adoptedOut)) cardBy.set(c.key, c); });
+    const items = [];
+    (view.links || []).forEach(l => {
+      const a = cardBy.get(l.a), b = cardBy.get(l.b);
+      if (a && b && a !== b) items.push({ l, a, b, lo: Math.min(a.x, b.x), hi: Math.max(a.x, b.x), y: Math.max(a.y, b.y) });
+    });
+    const byRow = new Map();
+    items.forEach(it => { const r = Math.round(it.y); if (!byRow.has(r)) byRow.set(r, []); byRow.get(r).push(it); });
+    byRow.forEach(list => {
+      list.sort((p, q) => (p.hi - p.lo) - (q.hi - q.lo));
+      const levels = [];
+      list.forEach(it => {
+        let lv = 0;
+        while (levels[lv] && levels[lv].some(o => !(it.hi + 20 < o.lo || it.lo - 20 > o.hi))) lv++;
+        (levels[lv] = levels[lv] || []).push(it);
+        it.lv = lv;
+      });
+    });
+    items.forEach(it => {
+      const barY = it.y + H / 2 + 56 + 10 * it.lv;            // 放在各卡片底部的小圆点（+N）下面，避免压住
+      const gray = grayFlag(it.a.gray && it.b.gray);
+      [it.a, it.b].forEach(c => view.lines.push({ kind: 'child', x1: c.x, y1: c.y + H / 2, x2: c.x, y2: barY, gray }));
+      view.pairLines.push({ x1: it.a.x, y1: barY, x2: it.b.x, y2: barY, style: it.l.type === '妾' ? 'thin' : 'thick',
+        action: 'collapse:' + it.l.a + '|' + it.l.b, gray });
+      view.bounds.maxY = Math.max(view.bounds.maxY, barY + 6);
+    });
+  }
+
+  // ---- 旁系表里直接写的两人关系：卡片右上角的小菱形；点开后把对方以灰显卡片补进同一行的外侧（连线由 kinLines 画）
+  function relMarkers(model, view, state) {
+    const { W, H } = CFG;
+    const relOpen = state.relOpen || new Set();
+    const gray = state.noGray ? false : true;
+    const presentKeys = () => new Set(view.cards.map(c => c.key));
+    for (let it = 0; it < 4; it++) {
+      let added = false;
+      [...view.cards].forEach(c => {
+        if (!relOpen.has(c.key)) return;
+        (model.collateralOf.get(c.key) || []).forEach(r => {
+          if (presentKeys().has(r.other)) return;
+          const ty = c.y + (r.kind === 'cross' ? (r.dir === 'down' ? CFG.ROW_GAP : -CFG.ROW_GAP) : 0);
+          const row = view.cards.filter(x => Math.abs(x.y - c.y) < 1 || Math.abs(x.y - ty) < 1);
+          const mn = Math.min(...row.map(x => x.x)), mx = Math.max(...row.map(x => x.x));
+          const x = c.x < (mn + mx) / 2 ? mn - (W + CFG.CHILD_GAP) : mx + (W + CFG.CHILD_GAP);
+          const p = model.persons.get(r.other), st = styleOf(model, p);
+          view.bounds.minY = Math.min(view.bounds.minY, ty - H / 2); view.bounds.maxY = Math.max(view.bounds.maxY, ty + H / 2);
+          view.cards.push({ key: r.other, x, y: ty, w: W, h: H, name: p.name, zi: p.zi || '', gender: p.gender, fill: st.fill, text: st.text,
+            family: p.family, selected: r.other === view.focus, gray, clickable: true, role: 'relative' });
+          view.bounds.minX = Math.min(view.bounds.minX, x - W / 2); view.bounds.maxX = Math.max(view.bounds.maxX, x + W / 2);
+          added = true;
+        });
+      });
+      if (!added) break;
+    }
+    const pres = presentKeys(), seen = new Set();
+    view.cards.filter(c => !c.adoptedOut).concat(view.cards.filter(c => c.adoptedOut)).forEach(c => {
+      if (seen.has(c.key)) return;
+      seen.add(c.key);
+      const rels = model.collateralOf.get(c.key) || [];
+      if (!rels.length) return;
+      const hidden = new Set(rels.map(r => r.other).filter(o => !pres.has(o)));
+      const open = relOpen.has(c.key);
+      if (!hidden.size && !open) return;
+      view.chips.push({ x: c.x + W / 2 - 4, y: c.y - H / 2 + 4, label: open ? '−' : String(hidden.size), action: 'rel:' + c.key, shape: 'diamond', gray: c.gray,
+        title: '旁系亲属：' + rels.map(r => model.persons.get(r.other).name.replace(/[(（].*?[)）]/g, '') + '（' + (r.kind === 'cross' && r.dir === 'up' ? '长辈' : r.term) + '）').join('、') });
+    });
+  }
+
+  // ---- 旁系关系连接线（v0.1 R30–R33）：只用亲子表推出；两人都在视图里、但共同长辈这条路没被画全时，才画 ⊓ 折线
+  function kinLines(model, view) {
+    const { H } = CFG;
+    const cards = [], seen = new Set();
+    view.cards.filter(c => !c.adoptedOut).concat(view.cards.filter(c => c.adoptedOut)).forEach(c => {
+      if (String(c.key).startsWith('u:') || !model.persons.has(c.key) || seen.has(c.key)) return;
+      seen.add(c.key); cards.push(c);
+    });
+    const present = new Set(cards.map(c => c.key));
+    const gender = k => (model.persons.get(k) || {}).gender;
+    const cache = new Map();
+    const upAt = (x, d) => {                                   // 恰好往上 d 代的所有祖先；path = 第1代…第d代
+      const ck = x + '#' + d;
+      if (cache.has(ck)) return cache.get(ck);
+      let cur = [{ node: x, path: [] }];
+      for (let i = 0; i < d; i++) {
+        const next = [];
+        cur.forEach(c => (model.childrenByChild.get(c.node) || []).forEach(r => {
+          [r.father, r.mother].forEach(pk => { if (pk && (model.persons.has(pk) || isVirtual(pk))) next.push({ node: pk, path: c.path.concat(pk) }); });   // 旁系关系表里的隐形共同长辈也算一代
+        }));
+        cur = next;
+      }
+      cache.set(ck, cur);
+      return cur;
+    };
+    const parentSet = (x, f) => new Set((model.childrenByChild.get(x) || []).map(r => r[f]).filter(Boolean));
+    const inter = (a, b) => [...a].some(v => b.has(v));
+    const connect = (a, b) => {                                // 最近的共同祖先（最多到第 3 代）
+      for (let d = 1; d <= 3; d++) {
+        const A = upAt(a, d), B = upAt(b, d), conns = [];
+        A.forEach(pa => B.forEach(pb => {
+          if (pa.node !== pb.node) return;
+          const mids = pa.path.slice(0, -1).concat(pb.path.slice(0, -1));
+          conns.push({ d, anc: pa.node, mids, female: mids.some(m => gender(m) === 'F') });
+        }));
+        if (conns.length) return conns;
+      }
+      return null;
+    };
+    const rows = new Map();
+    cards.forEach(c => { const r = Math.round(c.y); if (!rows.has(r)) rows.set(r, []); rows.get(r).push(c); });
+    const groups = new Map();
+    rows.forEach((cs, ry) => {
+      for (let i = 0; i < cs.length; i++) for (let j = i + 1; j < cs.length; j++) {
+        const a = cs[i].key, b = cs[j].key, conns = connect(a, b);
+        const tp = model.collateralPairs && model.collateralPairs.get(a + '|' + b);       // 旁系关系表里直接写的两人关系
+        if (!conns && !tp) continue;
+        if (conns && conns.some(c => (isVirtual(c.anc) || present.has(c.anc)) && c.mids.every(m => present.has(m)))) continue;   // 已经被亲子线（或兄弟括线）连通
+        let c0 = null, kind, gk;
+        if (tp) { kind = tp.kind; gk = ry + '|tbl|' + tp.rowId; c0 = { female: kind === 'biao' }; }
+        else {
+          conns.sort((x, y) => x.female - y.female);
+          c0 = conns[0];
+          kind = c0.d === 1 ? 'sib' : c0.d === 2 ? (c0.female ? 'biao' : 'tang') : 'zc';
+          gk = ry + '|' + kind + '|' + c0.anc;
+        }
+        if (!groups.has(gk)) {
+          let tag = '';
+          if (kind === 'sib') {
+            const fs = inter(parentSet(a, 'father'), parentSet(b, 'father')), ms = inter(parentSet(a, 'mother'), parentSet(b, 'mother'));
+            if (fs && !ms && parentSet(a, 'mother').size && parentSet(b, 'mother').size) tag = '异母';
+            else if (ms && !fs && parentSet(a, 'father').size && parentSet(b, 'father').size) tag = '异父';
+          }
+          groups.set(gk, { ry, kind, tag, female: c0.female, members: new Set() });
+        }
+        groups.get(gk).members.add(cs[i]); groups.get(gk).members.add(cs[j]);
+      }
+    });
+    // 差一辈的旁系（如从子）：Π 折线，一脚短（接长辈）一脚长（落到下一行的晚辈）；横线在长辈这一行的上方
+    const cardOf = new Map(cards.map(c => [c.key, c]));
+    (model.crossList || []).forEach(x => {
+      const ec = cardOf.get(x.elder), yc = cardOf.get(x.younger);
+      if (!ec || !yc) return;
+      groups.set('x|' + x.rowId + '|' + x.younger, { ry: Math.round(ec.y), kind: 'cross', term: x.term, members: new Set([ec, yc]) });
+    });
+    // 分层：同一行里横向范围重叠的线放在不同高度；每个人的竖脚错开，避免叠在一起
+    const out = [], legUse = new Map(), byRow = new Map();
+    groups.forEach(g => { if (!byRow.has(g.ry)) byRow.set(g.ry, []); byRow.get(g.ry).push(g); });
+    byRow.forEach(list => {
+      list.forEach(g => { g.ms = [...g.members].sort((p, q) => p.x - q.x); g.l = g.ms[0].x; g.r = g.ms[g.ms.length - 1].x; });
+      list.sort((p, q) => (p.r - p.l) - (q.r - q.l));
+      const levels = [];
+      list.forEach(g => {
+        let lv = 0;
+        while (levels[lv] && levels[lv].some(o => !(g.r + 30 < o.l || g.l - 30 > o.r))) lv++;
+        (levels[lv] = levels[lv] || []).push(g);
+        g.lv = lv;
+      });
+      list.forEach(g => {
+        if (g.kind === 'cross') {
+          const legs = g.ms.map(c => { const n = legUse.get(c.key) || 0; legUse.set(c.key, n + 1); return c.x + 24 + 8 * n; });
+          out.push({ kind: 'cross', dash: true, label: g.term, y: g.ry, yCard: g.ry - H / 2, legY: g.ms.map(c => c.y - H / 2),
+            top: g.ry - H / 2 - 52 - 14 * g.lv, legs, x1: Math.min(...legs), x2: Math.max(...legs) });
+          return;
+        }
+        const gs = g.ms.map(c => gender(c.key)), allM = gs.every(x => x === 'M'), allF = gs.every(x => x === 'F');
+        const word = allM ? '兄弟' : allF ? '姐妹' : '兄弟姐妹';
+        const prefix = g.kind === 'sib' ? g.tag : g.kind === 'tang' ? '堂' : g.kind === 'biao' ? '表' : g.kind === 'zu' ? '族' : (g.female ? '再从表' : '再从');
+        const legs = g.ms.map(c => { const n = legUse.get(c.key) || 0; legUse.set(c.key, n + 1); return c.x + 24 + 8 * n; });
+        out.push({ kind: g.kind, dash: g.kind !== 'sib', dot: g.kind === 'zu', label: prefix + word, y: g.ry, yCard: g.ry - H / 2,
+          top: g.ry - H / 2 - 52 - 14 * g.lv, legs, x1: Math.min(...legs), x2: Math.max(...legs) });
+      });
+    });
+    return out;
   }
 
   function layoutFamily(model, o, state) {
     const { focus, axis, solo, soloKey, coreKey } = o;
-    const openOv = state.open, expSp = state.expSp;
+    const openOv = state.open, expSp = state.expSp, twin = state.twin || null, dupAdopt = state.dupAdopt || null;
     const mergeUnknown = state.mergeUnknown !== false;
     const warnings = [];
     const grayFlag = value => state.noGray ? false : !!value;
     const { W, H } = CFG;
+    const virtualRow = !!solo && isVirtual(soloKey);        // 兄弟行（来自旁系关系表）：共同母亲不画
     const pitch = W + CFG.PITCH_GAP;
 
     const fatherRows = solo ? (model.childrenByMother.get(soloKey) || []) : (model.childrenByFather.get(axis) || []);
@@ -340,15 +632,18 @@
     const kidOpenSet = state.kidOpen || new Set();
     const PW = W + CFG.PAIR_GAP;
     const pushTo = (map, k, v) => { if (!map.has(k)) map.set(k, []); map.get(k).push(v); };
-    function buildUnit(key, depth) {
+    const isOut = r => !!(dupAdopt && r && dupAdopt.has(r.child) && r.rel !== '过继入');   // 生父母名下那张
+    function buildUnit(key, depth, frozen) {
       const csp = [], seen = new Set();
       model.spousesOf(key).forEach(x => {
         if (seen.has(x.key) || !model.persons.has(x.key)) return;      // 同一对夫妻在婚姻表里重复出现时只算一次
         seen.add(x.key);
-        csp.push({ key: x.key, m: x.m, exp: expSp.has(key + '|' + x.key) });
+        const link = !!twin && twin.has(x.key) && x.key !== key;                       // 对方本来就在画面里
+        const exp = !frozen && (expSp.has(key + '|' + x.key) || (link && expSp.has(x.key + '|' + key)));   // 任意一方点开，双方都算展开；灰显那张不跟着变
+        csp.push({ key: x.key, m: x.m, exp, link });
       });
       const expIdx = new Map();
-      csp.forEach(x => { if (x.exp) expIdx.set(x.key, expIdx.size); });
+      csp.forEach(x => { if (x.exp && !x.link) expIdx.set(x.key, expIdx.size); });
       const spOrder = new Map(csp.map((x, i) => [x.key, i]));
       const mar = new Map(), rest = new Map();
       const rows = [];
@@ -368,15 +663,15 @@
           .sort((a, b) => (spOrder.has(a) ? spOrder.get(a) : 1e9) - (spOrder.has(b) ? spOrder.get(b) : 1e9))
           .reduce((acc, k) => acc.concat(orderSiblings(rest.get(k), model, warnings)), []) });
       }
-      csp.filter(x => x.exp).forEach(x => {
+      csp.filter(x => x.exp && !x.link).forEach(x => {
         const rs = mar.get(x.key);
         if (rs && rs.length) groups.push({ gkey: key + '|' + x.key, kind: 'mar', idx: expIdx.get(x.key), count: rs.length,
           hasFocus: rs.some(r => r.child === focus),
           getRows: () => orderSiblings(rs, model, warnings) });
       });
       groups.forEach(g => {
-        g.open = depth < 8 && kidOpenSet.has(g.gkey);
-        g.kids = g.open ? g.getRows().map(r => ({ row: r, unit: buildUnit(r.child, depth + 1) })) : [];
+        g.open = !frozen && depth < 8 && kidOpenSet.has(g.gkey);
+        g.kids = g.open ? g.getRows().map(r => ({ row: r, unit: buildUnit(r.child, depth + 1, isOut(r)) })) : [];
       });
       // 宽度：本人 + 已展开配偶；下面若有展开的子女，取两者较宽者。各组尽量在自己的引出点正下方，放不下就往右推。
       const own = W + expIdx.size * PW;
@@ -404,7 +699,7 @@
           (mergeUnknown && hasLegal && s === leftSp && !c.mother && c.motherLabel === '不详'));
       s.kids = orderSiblings(rows, model, warnings).map(r => ({
         row: r, key: r.child, p: model.persons.get(r.child),
-        unit: (o.focalChild && r.child === o.focalChild && o.focalOwnView) ? null : buildUnit(r.child, 0)
+        unit: (o.focalChild && r.child === o.focalChild && o.focalOwnView) ? null : buildUnit(r.child, 0, isOut(r))
       }));
       const dflt = o.allOpen || s.kind !== 'other' || s.solo || s.key === coreKey;
       s.defaultOpen = dflt;
@@ -462,7 +757,8 @@
     });
 
     // ---- 6. 输出：卡片、线、圆点、图标
-    const cards = [], lines = [], pairLines = [], chips = [], icons = [], openMap = {};
+    const cards = [], lines = [], pairLines = [], chips = [], icons = [], openMap = {}, links = [];
+    const barOff = H / 2 + CFG.BRACKET;                 // 括线横杠相对卡片中心的下移量
     const mkCard = (key, x, y, p, extra) => {
       const st = styleOf(model, p);
       const card = Object.assign({
@@ -474,10 +770,11 @@
       return card;
     };
     // 输出一个单元（人物卡 + 联姻对象 + "+N"标记 + 展开后的下一代），可递归
-    const emitUnit = (u, cx, y, gray) => {
-      gray = grayFlag(gray);
+    const emitUnit = (u, cx, y, gray, row) => {
+      const out = !!(dupAdopt && row && dupAdopt.has(u.key) && row.rel !== '过继入');   // 本人出现两次，这是生父母名下的那一张
+      gray = grayFlag(gray || out);
       const kx = cx + W / 2;
-      cards.push(mkCard(u.key, kx, y, u.p, { role: 'child', gray }));
+      cards.push(mkCard(u.key, kx, y, u.p, Object.assign({ role: 'child', gray }, out ? { adoptedOut: true, zi: '出继' + adoptiveName(model, u.key) } : {})));
       // R22–R25：联姻对象默认折叠成左上角小图标；点击展开，点婚姻线收回
       let ni = 0, ne = 0;
       u.csp.forEach(x => {
@@ -487,11 +784,16 @@
           const st = styleOf(model, sp2);
           icons.push({ x: kx - W / 2 + 6 + ni * (CFG.ICON + 5), y: y - H / 2 + 2, shape: sp2.gender === 'M' ? 'square' : 'circle',
             fill: st.fill, size: CFG.ICON, title: sp2.name + (sp2.family && sp2.family !== '-' ? '（' + sp2.family + '）' : ''),
-            action: 'expand:' + u.key + '|' + x.key, gray });
+            action: 'expand:' + u.key + '|' + x.key, gray, out });
           ni++;
+        } else if (x.link) {                                // 对方本来就在画面别处：不复制卡片，登记成长括线（画在最后，见 linkBrackets）
+          const lk = [u.key, x.key].sort().join('|');
+          if (!links.some(l => l.k === lk)) links.push({ k: lk, a: u.key, b: x.key, type: x.m.type });
         } else {
-          const px = kx + ne * PW, sx = kx + (ne + 1) * PW;
-          pairLines.push({ x1: px + W / 2, y1: y, x2: sx - W / 2, y2: y, style: x.m.type === '妾' ? 'thin' : 'thick', action: 'collapse:' + u.key + '|' + x.key, gray });
+          const px = kx + ne * PW, sx = kx + (ne + 1) * PW, barK = y + barOff;
+          lines.push({ kind: 'child', x1: px, y1: y + H / 2, x2: px, y2: barK, gray });
+          lines.push({ kind: 'child', x1: sx, y1: y + H / 2, x2: sx, y2: barK, gray });
+          pairLines.push({ x1: px, y1: barK, x2: sx, y2: barK, style: x.m.type === '妾' ? 'thin' : 'thick', action: 'collapse:' + u.key + '|' + x.key, gray });
           cards.push(mkCard(x.key, sx, y, sp2, { role: 'childSpouse', gray }));
           ne++;
         }
@@ -500,9 +802,9 @@
       const yN = y + CFG.ROW_GAP, busN = yN - H / 2 - CFG.BUS_OFF;
       u.groups.forEach(g => {
         const ax = g.kind === 'rest' ? kx : kx + g.idx * PW + PW / 2;
-        const ay = g.kind === 'rest' ? y + H / 2 : y;
+        const ay = g.kind === 'rest' ? y + H / 2 : y + barOff;
         const sibN = g.count - (g.hasFocus ? 1 : 0);
-        chips.push({ x: ax, y: g.kind === 'rest' ? y + H / 2 + 26 : y + 22, label: g.open ? '−' : (sibN > 0 ? '+' + sibN : '+'), action: 'kids:' + g.gkey, gray });
+        chips.push({ x: ax, y: g.kind === 'rest' ? y + H / 2 + 26 + (ne > 0 ? CFG.BRACKET + 4 : 0) : y + barOff + 22, label: g.open ? '−' : (sibN > 0 ? '+' + sibN : '+'), action: 'kids:' + g.gkey, gray, out });
         if (!g.open) return;
         let left = cx + g.left;
         const placed = g.kids.map(kd => { const p = { kd, left, x: left + W / 2 }; left += kd.unit.w + CFG.CHILD_GAP; return p; });
@@ -511,52 +813,57 @@
         lines.push({ kind: 'child', x1: Math.min(ax, ...xs), y1: busN, x2: Math.max(ax, ...xs), y2: busN, gray });
         placed.forEach(p => {
           lines.push({ kind: 'child', x1: p.x, y1: busN, x2: p.x, y2: yN - H / 2, double: p.kd.row.rel === '过继入', gray });
-          emitUnit(p.kd.unit, p.left, yN, gray);
+          emitUnit(p.kd.unit, p.left, yN, gray, p.kd.row);
         });
       });
     };
     if (!solo) cards.push(mkCard(axis, 0, y0, model.persons.get(axis), { role: 'axis' }));
 
     allSp.forEach(s => {
+      if (isVirtual(s.key)) { openMap[s.key] = s.open; return; }
       const p = s.placeholder ? { name: s.name, zi: '', gender: 'F', family: '-' } : model.persons.get(s.key);
       const gray = !!coreKey && s.key !== coreKey;
       cards.push(mkCard(s.key, s.x, y0, p, { role: 'spouse', gray, clickable: !s.placeholder, selected: s.key === focus }));
       openMap[s.key] = s.open;
     });
 
-    // 婚姻线：沿这一行依次连接（左侧粗线；右侧按目标配偶类别粗/细）
+    // 婚姻括线：沿这一行依次连接。每张卡片底部有一条细竖脚，竖脚下面是横杠（正妻粗、其他细）
     if (!solo) {
-      if (leftSp) lines.push({
-        kind: 'marry', style: 'thick', x1: leftSp.x + W / 2, y1: y0, x2: -W / 2, y2: y0,
-        gray: grayFlag(!!coreKey && leftSp.key !== coreKey)
-      });
-      let px = W / 2;
+      const barY = y0 + barOff;
+      const leg = (x, gray) => lines.push({ kind: 'child', x1: x, y1: y0 + H / 2, x2: x, y2: barY, gray: grayFlag(gray) });
+      leg(0, false);
+      if (leftSp) {
+        const g = !!coreKey && leftSp.key !== coreKey;
+        leg(leftSp.x, g);
+        lines.push({ kind: 'marry', style: 'thick', x1: leftSp.x, y1: barY, x2: 0, y2: barY, gray: grayFlag(g) });
+      }
+      let px = 0;
       rightList.forEach(s => {
-        lines.push({
-          kind: 'marry', style: s.kind === 'other' ? 'thin' : 'thick',
-          x1: px, y1: y0, x2: s.x - W / 2, y2: y0,
-          gray: grayFlag(!!coreKey && s.key !== coreKey)
-        });
-        px = s.x + W / 2;
+        const g = !!coreKey && s.key !== coreKey;
+        leg(s.x, g);
+        lines.push({ kind: 'marry', style: s.kind === 'other' ? 'thin' : 'thick', x1: px, y1: barY, x2: s.x, y2: barY, gray: grayFlag(g) });
+        px = s.x;
       });
     }
 
     const busY = y1 - H / 2 - CFG.BUS_OFF;
+    const focusComp = virtualRow ? ((model.childrenByChild.get(focus) || []).find(r => r.virtual) || {}).fullComp : null;
+    const halfGray = k => !!focusComp && !!k.row.virtual && k.row.fullComp !== focusComp;   // 异母兄弟姐妹：整体灰显
     allSp.forEach(s => {
       if (!s.kids.length) return;
       const gray = !!coreKey && s.key !== coreKey;
       // R13：妾室等的子女默认折叠，卡片下方紧贴一个小圆点
       if (s.kind === 'other' && !s.solo) {
         const n = s.kids.length - (s.kids.some(k => k.row.child === focus) ? 1 : 0);
-        chips.push({ x: s.x, y: y0 + H / 2 + 26, label: s.open ? '−' : (n > 0 ? '+' + n : '+'), action: 'toggle:' + s.key });
+        chips.push({ x: s.x, y: y0 + barOff + 22, label: s.open ? '−' : (n > 0 ? '+' + n : '+'), action: 'toggle:' + s.key });
       }
       if (!s.open) return;
-      const startY = s.dropAtMid ? y0 : y0 + H / 2;
-      lines.push({ kind: 'child', x1: s.dropX, y1: startY, x2: s.dropX, y2: busY, gray });
+      const startY = s.dropAtMid ? y0 + barOff : y0 + H / 2;
       const xs = s.kids.map(k => k.x);
-      lines.push({ kind: 'child', x1: Math.min(s.dropX, ...xs), y1: busY, x2: Math.max(s.dropX, ...xs), y2: busY, gray });
+      if (!virtualRow) lines.push({ kind: 'child', x1: s.dropX, y1: startY, x2: s.dropX, y2: busY, gray });   // 兄弟行：顶上不留向上的短竖线
+      lines.push({ kind: 'child', x1: Math.min(...(virtualRow ? [] : [s.dropX]), ...xs), y1: busY, x2: Math.max(...(virtualRow ? [] : [s.dropX]), ...xs), y2: busY, gray });
       s.kids.forEach(k => {
-        lines.push({ kind: 'child', x1: k.x, y1: busY, x2: k.x, y2: y1 - H / 2, double: k.row.rel === '过继入', gray });
+        lines.push({ kind: 'child', x1: k.x, y1: busY, x2: k.x, y2: y1 - H / 2, double: k.row.rel === '过继入', gray: grayFlag(gray || halfGray(k)) });
         // R29：选中的人——把他"自己的配偶＋子女"那张子图，整体挪到他在兄弟姐妹行里的位置上
         if (o.focalChild && k.key === o.focalChild && o.focalOwnView) {
           const sub = o.focalOwnView;
@@ -567,11 +874,12 @@
           mv(sub.pairLines, pairLines, ['x1', 'y1', 'x2', 'y2']);
           mv(sub.chips, chips, ['x', 'y']);
           mv(sub.icons, icons, ['x', 'y']);
+          (sub.links || []).forEach(l => { if (!links.some(z => z.k === l.k)) links.push(l); });
           for (const kk in sub.openMap) if (!(kk in openMap)) openMap[kk] = sub.openMap[kk];   // 本人这一段的妾室开合状态也要带上，否则点"−"收不回去
           return;
         }
 
-        emitUnit(k.unit, k.left, y1, gray);
+        emitUnit(k.unit, k.left, y1, gray || halfGray(k), k.row);
       });
     });
 
@@ -585,6 +893,12 @@
         if (!isReal(key)) return null;
         const up = resolveParents(model, key);
         if (!up) return null;
+        if (isVirtual(up.axis)) {                      // 没有父母记录、但在旁系关系表里有亲兄弟姐妹：只展开这些兄弟姐妹，不画祖辈卡
+          const seenV = new Set([key]);
+          const sibV = (model.childrenByMother.get(up.axis) || []).filter(c => !seenV.has(c.child) && seenV.add(c.child));
+          return sibV.length ? { f: null, m: null, virtual: true, sibRows: sibV, adopted: false } : null;
+        }
+        if (isVirtual(up.coreKey)) return null;
         const m = up.solo ? up.axis : (isReal(up.coreKey) ? up.coreKey : null);
         const f = up.solo ? null : up.axis;
         const seen = new Set([key]);
@@ -608,36 +922,71 @@
         chips.push({ x: t.x, y: 0 - H / 2 - 26, label: open ? '−' : (info.sibRows.length > 0 ? '+' + info.sibRows.length : '+'), action: 'up:' + t.key });
         if (!open) return;
         const side = t.mother ? mSide : (mSide === 'L' ? 'R' : 'L');
-        const units = orderSiblings(info.sibRows, model, warnings).map(r => ({ row: r, unit: buildUnit(r.child, 0) }));
-        const totalW = units.reduce((a, u) => a + u.unit.w, 0) + Math.max(0, units.length - 1) * CFG.CHILD_GAP;
-        let left = side === 'R' ? xMaxC + 2 * CFG.MARGIN : xMinC - 2 * CFG.MARGIN - totalW;
-        const placed = units.map(u => { const p = { u, left, x: left + W / 2 }; left += u.unit.w + CFG.CHILD_GAP; return p; });
+        const widthOf = us => us.reduce((a, u) => a + u.unit.w, 0) + Math.max(0, us.length - 1) * CFG.CHILD_GAP;
+        const lay = (us, left0) => { let left = left0; return us.map(u => { const p = { u, left, x: left + W / 2 }; left += u.unit.w + CFG.CHILD_GAP; return p; }); };
+        let placed;
+        if (info.virtual) {
+          // 旁系关系表的兄弟姐妹：保持"左长右幼"——比他年长的排在整个视图的左外侧，比他年幼的排在右外侧
+          const myRow = (model.childrenByChild.get(t.key) || []).find(r => r.virtual);
+          const byIdx = info.sibRows.slice().sort((a, b) => a.idx - b.idx).map(r => ({ row: r, unit: buildUnit(r.child, 0, isOut(r)) }));
+          const elder = byIdx.filter(u => myRow && u.row.idx < myRow.idx), younger = byIdx.filter(u => !(myRow && u.row.idx < myRow.idx));
+          placed = lay(elder, xMinC - 2 * CFG.MARGIN - widthOf(elder)).concat(lay(younger, xMaxC + 2 * CFG.MARGIN));
+        } else {
+          const units = orderSiblings(info.sibRows, model, warnings).map(r => ({ row: r, unit: buildUnit(r.child, 0, isOut(r)) }));
+          placed = lay(units, side === 'R' ? xMaxC + 2 * CFG.MARGIN : xMinC - 2 * CFG.MARGIN - widthOf(units));
+        }
+        if (placed.length) {                             // 记下已占用的范围，避免父、母两边的兄弟姐妹互相压住
+          xMinC = Math.min(xMinC, ...placed.map(p => p.left));
+          xMaxC = Math.max(xMaxC, ...placed.map(p => p.left + p.u.unit.w));
+        }
         const xs = [t.x].concat(placed.map(p => p.x));
         blocks.push({ t, info, placed, xs, c: (Math.min(...xs) + Math.max(...xs)) / 2, hw: (info.f && info.m) ? pitch / 2 + W / 2 : W / 2 });
       });
-      if (blocks.length === 2) {                       // 两侧的祖辈卡不能挤在一起
-        blocks.sort((a, b) => a.c - b.c);
-        const need = (blocks[0].c + blocks[0].hw) + CFG.MARGIN - (blocks[1].c - blocks[1].hw);
-        if (need > 0) { blocks[0].c -= need / 2; blocks[1].c += need / 2; }
+      const realBlocks = blocks.filter(b => !b.info.virtual);
+      if (realBlocks.length === 2) {                   // 两侧的祖辈卡不能挤在一起（兄弟行没有祖辈卡，不参与）
+        realBlocks.sort((a, b) => a.c - b.c);
+        const need = (realBlocks[0].c + realBlocks[0].hw) + CFG.MARGIN - (realBlocks[1].c - realBlocks[1].hw);
+        if (need > 0) { realBlocks[0].c -= need / 2; realBlocks[1].c += need / 2; }
       }
       blocks.forEach(b => {
         const yA = -CFG.ROW_GAP, busA = 0 - H / 2 - CFG.BUS_OFF, both = !!(b.info.f && b.info.m);
         const put = (key, x) => cards.push(mkCard(key, x, yA, model.persons.get(key), { role: 'ancestor', gray: true }));
+        if (b.info.virtual) {                          // 兄弟行：只有一条横括线把他和兄弟姐妹连起来，顶上不留向上的短竖线
+          lines.push({ kind: 'child', x1: Math.min(...b.xs), y1: busA, x2: Math.max(...b.xs), y2: busA, gray: grayFlag(true) });
+          lines.push({ kind: 'child', x1: b.t.x, y1: busA, x2: b.t.x, y2: 0 - H / 2, gray: grayFlag(true) });
+          b.placed.forEach(p => {
+            lines.push({ kind: 'child', x1: p.x, y1: busA, x2: p.x, y2: 0 - H / 2, gray: grayFlag(true) });
+            emitUnit(p.u.unit, p.left, 0, true, p.u.row);
+          });
+          return;
+        }
         if (both) {
           const mx = b.c - pitch / 2, fx = b.c + pitch / 2;
           put(b.info.m, mx); put(b.info.f, fx);
           const mar = (model.marriagesByHusband.get(b.info.f) || []).find(x => x.w === b.info.m);
-          lines.push({ kind: 'marry', style: mar && mar.type === '妾' ? 'thin' : 'thick', x1: mx + W / 2, y1: yA, x2: fx - W / 2, y2: yA });
+          const barA = yA + barOff;
+          lines.push({ kind: 'child', x1: mx, y1: yA + H / 2, x2: mx, y2: barA, gray: grayFlag(true) });
+          lines.push({ kind: 'child', x1: fx, y1: yA + H / 2, x2: fx, y2: barA, gray: grayFlag(true) });
+          lines.push({ kind: 'marry', style: mar && mar.type === '妾' ? 'thin' : 'thick', x1: mx, y1: barA, x2: fx, y2: barA, gray: grayFlag(true) });
         } else put(b.info.f || b.info.m, b.c);
-        lines.push({ kind: 'child', x1: b.c, y1: both ? yA : yA + H / 2, x2: b.c, y2: busA, gray: grayFlag(true) });
+        lines.push({ kind: 'child', x1: b.c, y1: both ? yA + barOff : yA + H / 2, x2: b.c, y2: busA, gray: grayFlag(true) });
         const all = b.xs.concat([b.c]);
         lines.push({ kind: 'child', x1: Math.min(...all), y1: busA, x2: Math.max(...all), y2: busA, gray: grayFlag(true) });
         lines.push({ kind: 'child', x1: b.t.x, y1: busA, x2: b.t.x, y2: 0 - H / 2, double: b.info.adopted, gray: grayFlag(true) });
         b.placed.forEach(p => {
           lines.push({ kind: 'child', x1: p.x, y1: busA, x2: p.x, y2: 0 - H / 2, double: p.u.row.rel === '过继入', gray: grayFlag(true) });
-          emitUnit(p.u.unit, p.left, 0, true);
+          emitUnit(p.u.unit, p.left, 0, true, p.u.row);
         });
       });
+    }
+
+    if (virtualRow) {                                  // 共同母亲那一行是空的：整体上移一行，让兄弟行成为第一行
+      const sh = -y1;
+      cards.forEach(c => { c.y += sh; });
+      lines.forEach(l => { l.y1 += sh; l.y2 += sh; });
+      pairLines.forEach(l => { l.y1 += sh; l.y2 += sh; });
+      chips.forEach(c => { c.y += sh; });
+      icons.forEach(i => { i.y += sh; });
     }
 
     // ---- 7. 范围（core = 正妻们及其子女，初始居中用）
@@ -656,7 +1005,7 @@
     const [bMinX, bMaxX] = span(cards.map(c => [c.x - W / 2, c.x + W / 2]));
     const [bMinY, bMaxY] = span(cards.map(c => [c.y - H / 2, c.y + H / 2]));
     return {
-      focus, axis, coreKey, solo, up: !!o.up, notes: o.notes || [], cards, lines, pairLines, chips, icons, openMap, warnings,
+      focus, axis, coreKey, solo, virtual: virtualRow, up: !!o.up, notes: o.notes || [], cards, lines, pairLines, chips, icons, openMap, warnings, links,
       core: { minX: cMin, maxX: cMax },
       bounds: { minX: bMinX, maxX: bMaxX, minY: bMinY, maxY: bMaxY }
     };
@@ -673,7 +1022,7 @@
     return out;
   }
 
-  const api = { CFG, buildModel, buildView, defaultState, searchPersons, orderSiblings, resolveParents, hasParents };
+  const api = { CFG, kinLines, buildModel, buildView, defaultState, searchPersons, orderSiblings, resolveParents, hasParents };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Core = api;
 })(typeof window !== 'undefined' ? window : globalThis);
 </script>
@@ -709,7 +1058,55 @@
   const stripName = name => (name ? name.replace(/[(（].*?[)）]/g, '') : '');
 
   /* ---------------------------------------------------------------- 渲染 */
-  function render() {
+  /* ------------------------------------------------ 展开/折叠的平滑过渡
+     卡片和小圆点：原来就有的平滑移到新位置，新出现的淡入；线和图标：没变的保持不动，新的淡入，消失的淡出 */
+  const DUR = 420, EASE = 'cubic-bezier(.33,.7,.25,1)';
+  const REDUCE = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  function collectDom() {
+    const cards = new Map(), chips = new Map(), sigs = [];
+    const put = (map, key, rec) => { let i = 0; while (map.has(key + '#' + i)) i++; map.set(key + '#' + i, rec); };
+    vp.querySelectorAll('[data-key]').forEach(n => put(cards, n.getAttribute('data-key'), { n, x: +n.getAttribute('data-x'), y: +n.getAttribute('data-y') }));
+    vp.querySelectorAll('[data-chip]').forEach(n => put(chips, n.getAttribute('data-chip'), { n, x: +n.getAttribute('data-x'), y: +n.getAttribute('data-y') }));
+    vp.querySelectorAll('[data-sig]').forEach(n => sigs.push([n.getAttribute('data-sig'), n]));
+    return { cards, chips, sigs };
+  }
+  function fadeIn(n, delay) {
+    const o = getComputedStyle(n).opacity;
+    n.style.opacity = '0'; n.getBoundingClientRect();
+    n.style.transition = `opacity ${DUR}ms ease ${delay || 0}ms`; n.style.opacity = o;
+    setTimeout(() => { n.style.opacity = ''; n.style.transition = ''; }, DUR + (delay || 0) + 60);
+  }
+  function glide(n, from, to) {
+    n.style.transition = 'none'; n.style.transform = `translate(${from.x}px,${from.y}px)`; n.getBoundingClientRect();
+    n.style.transition = `transform ${DUR}ms ${EASE}`; n.style.transform = `translate(${to.x}px,${to.y}px)`;
+    setTimeout(() => { n.style.transition = ''; n.style.transform = ''; }, DUR + 60);
+  }
+  function playTransition(old) {
+    const now = collectDom();
+    const ghosts = el('g', { 'pointer-events': 'none' });
+    vp.insertBefore(ghosts, vp.firstChild);
+    const fadeOut = n => {
+      ghosts.appendChild(n);
+      const o = getComputedStyle(n).opacity;
+      n.style.opacity = o; n.getBoundingClientRect();
+      n.style.transition = `opacity ${Math.round(DUR * 0.7)}ms ease`; n.style.opacity = '0';
+      setTimeout(() => n.remove(), DUR);
+    };
+    [[now.cards, old.cards], [now.chips, old.chips]].forEach(([cur, prev]) => {
+      cur.forEach((c, k) => {
+        const p = prev.get(k);
+        if (!p) fadeIn(c.n, 60);
+        else if (p.x !== c.x || p.y !== c.y) glide(c.n, p, c);
+      });
+      prev.forEach((p, k) => { if (!cur.has(k)) fadeOut(p.n); });
+    });
+    const oldSigs = new Set(old.sigs.map(s => s[0])), newSigs = new Set(now.sigs.map(s => s[0]));
+    now.sigs.forEach(([sig, n]) => { if (!oldSigs.has(sig)) fadeIn(n, 120); });
+    old.sigs.forEach(([sig, n]) => { if (!newSigs.has(sig)) fadeOut(n); });
+  }
+
+  function render(animate) {
+    const old = (animate && !REDUCE && vp.firstChild) ? collectDom() : null;
     view = Core.buildView(model, focus, state);
     vp.textContent = '';
     const gLines = el('g', {}, vp), gCards = el('g', {}, vp), gTop = el('g', {}, vp);
@@ -718,26 +1115,35 @@
       if (l.double) {
         [-2.6, 2.6].forEach(o => el('line', {
           x1: l.x1 + o, y1: l.y1, x2: l.x2 + o, y2: l.y2,
-          class: 'ln child' + (l.gray ? ' gray' : '')
+          class: 'ln child' + (l.gray ? ' gray' : ''),
+          'data-sig': `L${Math.round(l.x1 + o)},${Math.round(l.y1)},${Math.round(l.x2 + o)},${Math.round(l.y2)}${l.gray ? 'g' : ''}`
         }, gLines));
       } else {
         el('line', {
           x1: l.x1, y1: l.y1, x2: l.x2, y2: l.y2,
-          class: 'ln ' + (l.kind === 'child' ? 'child' : l.style) + (l.gray ? ' gray' : '')
+          class: 'ln ' + (l.kind === 'child' ? 'child' : l.style) + (l.gray ? ' gray' : ''),
+          'data-sig': `L${Math.round(l.x1)},${Math.round(l.y1)},${Math.round(l.x2)},${Math.round(l.y2)}${l.kind === 'child' ? 'c' : l.style}${l.gray ? 'g' : ''}`
         }, gLines);
       }
     });
     view.pairLines.forEach(l => {
-      const g = el('g', { class: 'pair' + (l.gray ? ' gray' : ''), 'data-act': l.action }, gLines);
+      const g = el('g', { class: 'pair' + (l.gray ? ' gray' : ''), 'data-act': l.action,
+        'data-sig': `P${Math.round(l.x1)},${Math.round(l.y1)},${Math.round(l.x2)},${Math.round(l.y2)}${l.style}${l.action}` }, gLines);
       el('line', { x1: l.x1, y1: l.y1, x2: l.x2, y2: l.y2, class: 'ln ' + l.style }, g);
       el('line', { x1: l.x1, y1: l.y1, x2: l.x2, y2: l.y2, class: 'hit' }, g);
       el('title', {}, g).textContent = '点击婚姻线：收回这位联姻对象';
     });
 
+    (view.kinLines || []).forEach(k => {          // 旁系连接线：⊓ 折线（亲兄弟实线；堂/表/再从虚线），线上标关系词
+      const d = k.legs.map((x, i) => `M${x},${k.legY ? k.legY[i] : k.yCard}L${x},${k.top}`).join('') + `M${k.x1},${k.top}L${k.x2},${k.top}`;
+      el('path', { d, class: 'kin' + (k.dash ? ' dash' : '') + (k.dot ? ' dot' : ''), 'data-sig': 'K' + d }, gLines);
+      el('text', { x: (k.x1 + k.x2) / 2, y: k.top - 6, class: 'kinlbl', 'data-sig': `T${Math.round(k.x1)},${Math.round(k.top)}${k.label}` }, gLines).textContent = k.label;
+    });
+
     view.cards.forEach(c => {
       const g = el('g', {
         class: 'card' + (c.gray ? ' gray' : '') + (c.clickable ? ' clickable' : ''),
-        transform: `translate(${c.x},${c.y})`
+        transform: `translate(${c.x},${c.y})`, 'data-key': c.key, 'data-x': c.x, 'data-y': c.y, 'data-uid': c.uid
       }, gCards);
       if (c.clickable) g.setAttribute('data-act', 'focus:' + c.key);
       const r = el('rect', {
@@ -755,15 +1161,29 @@
       el('title', {}, g).textContent = stripName(c.name) + (c.zi ? '（' + c.zi + '）' : '') + (c.family && c.family !== '-' ? ' · ' + c.family : '');
     });
 
+    (view.adoptLinks || []).forEach(a => {       // 过继的虚线 Π：平时隐藏，鼠标放在生父母名下那张卡上时显示
+      const g = el('g', { class: 'adoptpi', 'data-bio': a.bioUid }, gLines);
+      el('path', { d: `M${a.x1},${a.y1}L${a.x1},${a.top}L${a.x2},${a.top}L${a.x2},${a.y2}`, class: 'kin dash' }, g);
+      el('text', { x: (a.x1 + a.x2) / 2, y: a.top - 6, class: 'kinlbl' }, g).textContent = a.label;
+      const bioG = gCards.querySelector(`[data-uid="${a.bioUid}"]`), adoptRect = gCards.querySelector(`[data-uid="${a.adoptUid}"] rect`);
+      if (bioG && adoptRect) {
+        bioG.addEventListener('mouseenter', () => { g.classList.add('on'); adoptRect.classList.add('sel'); });
+        bioG.addEventListener('mouseleave', () => { g.classList.remove('on'); if (!adoptRect.dataset.sel) adoptRect.classList.remove('sel'); });
+        if (adoptRect.classList.contains('sel')) adoptRect.dataset.sel = '1';
+      }
+    });
+
     view.chips.forEach(c => {
-      const g = el('g', { class: 'chip' + (c.gray ? ' gray' : ''), transform: `translate(${c.x},${c.y})`, 'data-act': c.action, style: 'cursor:pointer;user-select:none;-webkit-user-select:none;' }, gTop);
+      const g = el('g', { class: 'chip' + (c.gray ? ' gray' : ''), transform: `translate(${c.x},${c.y})`, 'data-act': c.action, 'data-chip': c.action, 'data-x': c.x, 'data-y': c.y, style: 'cursor:pointer;user-select:none;-webkit-user-select:none;' }, gTop);
       el('circle', { r: 24, style: 'fill:transparent;stroke:transparent;' }, g);
-      el('circle', { r: 12 }, g);
+      if (c.shape === 'diamond') el('polygon', { points: '0,-13 13,0 0,13 -13,0', class: 'dia' }, g);   // 旁系亲属：小菱形
+      else el('circle', { r: 12 }, g);
       el('text', { x: 0, y: 1 }, g).textContent = c.label;
+      if (c.title) el('title', {}, g).textContent = c.title;
     });
 
     view.icons.forEach(i => {
-      const g = el('g', { class: 'icon' + (i.gray ? ' gray' : ''), 'data-act': i.action }, gTop);
+      const g = el('g', { class: 'icon' + (i.gray ? ' gray' : ''), 'data-act': i.action, 'data-sig': `I${i.action}@${Math.round(i.x)},${Math.round(i.y)}` }, gTop);
       const s = i.size;
       if (i.shape === 'circle') el('circle', { cx: i.x + s / 2, cy: i.y + s / 2, r: s / 2, fill: i.fill }, g);
       else el('rect', { x: i.x, y: i.y, width: s, height: s, fill: i.fill }, g);
@@ -771,6 +1191,7 @@
     });
 
     renderInfo();
+    if (old) playTransition(old);
   }
 
   function renderInfo() {
@@ -783,7 +1204,10 @@
     infoEl.textContent = '';
     const b = document.createElement('b'); b.textContent = bits[0]; infoEl.appendChild(b);
     if (bits.length > 1) infoEl.appendChild(document.createTextNode('　' + bits.slice(1).join(' · ')));
-    if (view.up) {
+    if (view.virtual) {
+      const d = document.createElement('div'); d.className = 'note'; d.textContent = '兄弟姐妹（来自旁系关系表，左长右幼；父母未录入；同父异母灰显）　本人的配偶与子女在下面一行';
+      infoEl.appendChild(d);
+    } else if (view.up) {
       const nameOf = k => k.startsWith('u:')
         ? (k.includes('庶母') ? '未知妾室' : '未知')
         : (model.persons.get(k) ? stripName(model.persons.get(k).name) : '未知');
@@ -857,10 +1281,11 @@
   }
   // R2.2：展开/收起后画面不自动居中、不缩放；只把被点的那个"+N"钉在屏幕原位，避免内容因腾出空间而滑走
   function keepChip(action, change) {
-    const before = view.chips.find(c => c.action === action);
+    const pick = () => view.chips.find(c => c.action === action && !c.out) || view.chips.find(c => c.action === action && !c.gray) || view.chips.find(c => c.action === action);
+    const before = pick();
     change();
-    render();
-    const after = before && view.chips.find(c => c.action === action);
+    render(true);
+    const after = before && pick();
     if (after) { T.x += (before.x - after.x) * T.k; T.y += (before.y - after.y) * T.k; applyT(); }
   }
   function act(a) {
@@ -870,6 +1295,9 @@
     else if (type === 'up') {                     // R2.2：父/母卡片上方的"+N"——往上展开一代（祖辈+兄弟姐妹）
       keepChip(a, () => { if (state.upOpen.has(arg)) state.upOpen.delete(arg); else state.upOpen.add(arg); });
     }
+    else if (type === 'rel') {                    // 小菱形：展开/收起旁系表里直接写的亲属
+      keepChip(a, () => { if (state.relOpen.has(arg)) state.relOpen.delete(arg); else state.relOpen.add(arg); });
+    }
     else if (type === 'kids') {                   // R2.2：点"+N"展开/收起这一组子女
       keepChip(a, () => { if (state.kidOpen.has(arg)) state.kidOpen.delete(arg); else state.kidOpen.add(arg); });
     }
@@ -877,13 +1305,13 @@
       const [k, sp] = arg.split('|');
       state.expSp.add(arg);
       if (state.kidOpen.has(k + '|*')) state.kidOpen.add(k + '|' + sp);   // 子女已经摊开的，展开配偶后继续摊开
-      render();
+      render(true);
     }
     else if (type === 'collapse') {
       const [k, sp] = arg.split('|');
-      state.expSp.delete(arg);
+      state.expSp.delete(arg); state.expSp.delete(sp + '|' + k);            // 两个方向都收回
       if (state.kidOpen.delete(k + '|' + sp)) state.kidOpen.add(k + '|*'); // 子女已经摊开的，收回配偶后继续摊开
-      render();
+      render(true);
     }
   }
 
@@ -933,6 +1361,7 @@
       state.expSp.clear();
       state.kidOpen.clear();
       state.upOpen.clear();
+      state.relOpen.clear();
       render();
       fit();
       setTimeout(() => { collapseAllEl.checked = false; }, 300);
